@@ -12,7 +12,7 @@ export function OngoingWorriesCard({ worries }: OngoingWorriesCardProps) {
   return (
     <div className="flex flex-1 flex-col gap-6 rounded-[14px] border border-[rgba(188,230,193,0.55)] bg-white p-8 shadow-[1px_1px_3px_-1px_rgba(0,0,0,0.25)]">
       <div className="flex items-center justify-between">
-        <h2 className="text-[30px] font-medium text-black">진행 중인 고민</h2>
+        <h2 className="text-[30px] font-semibold text-black">진행 중인 고민</h2>
         <Link
           to={ROUTES.worries}
           className="flex items-center gap-1 text-[15px] font-medium text-[#666]"
