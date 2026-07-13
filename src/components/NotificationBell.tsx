@@ -8,9 +8,10 @@ export function NotificationBell() {
     <Link
       to={ROUTES.notifications}
       aria-label="알림"
-      className="flex h-6.5 w-6.5 items-center justify-center"
+      className="flex h-9 w-9 items-center justify-center"
     >
-      <img src={alarmIcon} alt="" className="h-3.75 w-3.75" />
+      {/* 피그마 실측(89:58, 67×67px) × 8/15 ≈ 36px → h-9 w-9로 정확히 떨어짐 */}
+      <img src={alarmIcon} alt="" className="h-9 w-9" />
     </Link>
   );
 }
