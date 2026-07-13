@@ -30,7 +30,6 @@ export interface HomeData {
   savedAmountPurchasedCount: number;
   /** 최대 2개, 타이머 잔여 시간이 짧은 순 정렬 */
   ongoingWorries: OngoingWorry[];
-  selectedMonth: string;
   monthlySummary: CategoryStat[];
   /** 오늘의 소비 한 줄 문구. 없으면 빈 상태 문구로 대체 */
   todayQuote: string | null;

@@ -10,11 +10,14 @@ export const homeMock: HomeData = {
   savedAmountPurchasedCount: 0,
   // 사용자 요청: 진행 중인 고민 데이터가 아직 없어 빈 배열로 표시 (OngoingWorriesCard의 빈 상태 UI 확인용)
   ongoingWorries: [],
-  selectedMonth: '7월',
+  // selectedMonth는 더 이상 여기 없음: "현재 월"은 목데이터가 아니라 실제 값이어야 하므로
+  // HomePage에서 getCurrentMonthLabel()로 런타임 계산해 내려준다 (src/pages/Home/index.tsx 참고)
   monthlySummary: [
-    { key: 'registered', label: '등록한 고민', count: 10, diffVsLastMonth: 2 },
-    { key: 'abandoned', label: '포기한 상품', count: 6, diffVsLastMonth: 1 },
-    { key: 'purchased', label: '구매한 상품', count: 4, diffVsLastMonth: 1 },
+    // count가 전부 0인데 증감(diffVsLastMonth)만 남아있는 건 모순이라 0으로 통일
+    { key: 'registered', label: '등록한 고민', count: 0, diffVsLastMonth: 0 },
+    { key: 'abandoned', label: '포기한 상품', count: 0, diffVsLastMonth: 0 },
+    { key: 'purchased', label: '구매한 상품', count: 0, diffVsLastMonth: 0 },
   ],
-  todayQuote: '필요한 것과 원하는 것을 구분해보세요.',
+  // 실제 문구 소스가 아직 없어 빈 문자열로 두고, TodayQuoteCard의 빈 상태 UI가 노출되도록 함
+  todayQuote: '',
 };
