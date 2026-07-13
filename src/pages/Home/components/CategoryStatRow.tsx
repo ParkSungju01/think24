@@ -31,11 +31,11 @@ export function CategoryStatRow({ stat }: CategoryStatRowProps) {
         <div
           className={`flex size-31.75 items-center justify-center rounded-full ${iconBgColor}`}
         >
-          <img src={icon} alt="" className="size-16.25" />
+          <img src={icon} alt="" className="size-17.25" />
         </div>
       </div>
-      <div className="flex flex-col gap-3">
-        <span className="text-[15px] font-medium text-black">{stat.label}</span>
+      <div className="flex flex-col gap-1">
+        <span className="text-[25px] font-medium text-[#666]">{stat.label}</span>
         <span className="text-[40px] font-semibold text-black">
           {stat.count}건
         </span>
