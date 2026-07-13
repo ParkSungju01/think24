@@ -34,9 +34,9 @@ export function WorryListItem({ worry }: WorryListItemProps) {
         <p className="text-[15px] font-medium text-black">
           {formatWon(worry.price)}원
         </p>
-        <div className="h-[7px] w-full rounded-[7px] bg-[#f5f5f5]">
+        <div className="h-1.75 w-full rounded-[7px] bg-[#f5f5f5]">
           <div
-            className="h-[7px] rounded-[7px] bg-[#7ccf8a]"
+            className="h-1.75 rounded-[7px] bg-[#7ccf8a]"
             style={{ width: `${worry.progressPercent}%` }}
           />
         </div>
@@ -50,7 +50,7 @@ export function WorryListItem({ worry }: WorryListItemProps) {
         // 확인 완료: 클릭 시 동작 없음 (no-op)
         <button
           type="button"
-          className="flex shrink-0 items-center gap-1 rounded-[6px] bg-[#7ccf8a] px-3 py-2 text-[13px] font-medium text-white"
+          className="flex shrink-0 items-center gap-1 rounded-md bg-[#7ccf8a] px-3 py-2 text-[13px] font-medium text-white"
         >
           <Plus className="h-3.5 w-3.5" />
           타이머 늘리기

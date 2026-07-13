@@ -32,7 +32,7 @@ export function SavedAmountCard({
           </span>
           <span className="text-[20px] font-medium">원</span>
         </p>
-        <span className="w-fit rounded-[6px] bg-[#eefff0] px-3 py-1.5 text-[15px] font-medium text-black">
+        <span className="w-fit rounded-md bg-[#eefff0] px-3 py-1.5 text-[15px] font-medium text-black">
           이번 달 + {formatWon(monthlySavedAmount)}원
         </span>
         <p className="text-[15px] font-medium text-black">
