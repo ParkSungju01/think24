@@ -7,7 +7,7 @@ interface HomeHeaderProps {
 export function HomeHeader({ userName }: HomeHeaderProps) {
   return (
     <div className="flex items-start justify-between">
-      <p className="text-[30px] font-medium leading-snug text-black">
+      <p className="text-[16px] font-medium leading-snug text-black">
         {userName}님,
         <br />
         오늘도 멈칫하고 계시네요!

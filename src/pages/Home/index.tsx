@@ -20,7 +20,8 @@ export function HomePage() {
   const selectedMonth = getCurrentMonthLabel();
 
   return (
-    <div className="flex flex-col gap-8 px-[72px] py-[64px]">
+    // 아주 넓은 모니터에서 카드가 과하게 늘어나지 않도록 원본 콘텐츠 폭(1920-409=1511px) 근처로 상한선을 둠
+    <div className="flex max-w-[1511px] flex-col gap-8 px-10 py-16">
       <HomeHeader userName={userName} />
       <ContentGrid
         totalSavedAmount={totalSavedAmount}

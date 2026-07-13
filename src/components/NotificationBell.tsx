@@ -8,9 +8,9 @@ export function NotificationBell() {
     <Link
       to={ROUTES.notifications}
       aria-label="알림"
-      className="flex h-12 w-12 items-center justify-center"
+      className="flex h-6.5 w-6.5 items-center justify-center"
     >
-      <img src={alarmIcon} alt="" className="h-7 w-7" />
+      <img src={alarmIcon} alt="" className="h-3.75 w-3.75" />
     </Link>
   );
 }

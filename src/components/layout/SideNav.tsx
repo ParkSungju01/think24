@@ -8,27 +8,27 @@ import myPageIcon from '../../assets/my-page.svg';
 
 export function SideNav() {
   return (
-    <nav className="flex flex-col gap-2 px-6">
-      <NavItem to={ROUTES.home} label="홈" icon={<House className="h-6 w-6" />} end />
+    <nav className="flex flex-col gap-4.5 px-5.5">
+      <NavItem to={ROUTES.home} label="홈" icon={<House className="h-5.75 w-5.75" />} end />
       <NavItem
         to={ROUTES.newWorry}
         label="새 고민 생성"
-        icon={<img src={addWorryIcon} alt="" className="h-6 w-6" />}
+        icon={<img src={addWorryIcon} alt="" className="h-5.75 w-5.75" />}
       />
       <NavItem
         to={ROUTES.worries}
         label="고민 목록"
-        icon={<img src={listIcon} alt="" className="h-6 w-6" />}
+        icon={<img src={listIcon} alt="" className="h-5.75 w-5.75" />}
       />
       <NavItem
         to={ROUTES.records}
         label="소비 기록"
-        icon={<img src={reportIcon} alt="" className="h-6 w-6" />}
+        icon={<img src={reportIcon} alt="" className="h-5.75 w-5.75" />}
       />
       <NavItem
         to={ROUTES.mypage}
         label="마이페이지"
-        icon={<img src={myPageIcon} alt="" className="h-6 w-6" />}
+        icon={<img src={myPageIcon} alt="" className="h-5.75 w-5.75" />}
       />
     </nav>
   );

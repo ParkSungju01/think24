@@ -15,18 +15,18 @@ export function NavItem({ to, label, icon, end }: NavItemProps) {
       to={to}
       end={end}
       className={({ isActive }) =>
-        `flex items-center gap-3 rounded-2xl px-4 py-3 transition-colors ${
+        `flex items-center gap-4.5 rounded-[9px] px-1.75 py-1.25 transition-colors ${
           isActive ? 'bg-[rgba(217,243,207,0.55)]' : ''
         }`
       }
     >
       {({ isActive }) => (
         <>
-          <span className="flex h-6 w-6 items-center justify-center opacity-60">
+          <span className="flex h-5.75 w-5.75 items-center justify-center opacity-60">
             {icon}
           </span>
           <span
-            className={`text-base font-medium ${
+            className={`text-[16px] font-medium ${
               isActive ? 'text-[#729e59]' : 'text-[#666]'
             }`}
           >

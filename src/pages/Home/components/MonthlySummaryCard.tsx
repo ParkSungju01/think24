@@ -12,7 +12,7 @@ export function MonthlySummaryCard({
   stats,
 }: MonthlySummaryCardProps) {
   return (
-    <div className="flex w-118.25 shrink-0 flex-col gap-6 rounded-[14px] border border-[rgba(188,230,193,0.55)] bg-white p-8 shadow-[1px_1px_3px_-1px_rgba(0,0,0,0.25)]">
+    <div className="flex w-full min-w-0 flex-col gap-6 rounded-[14px] border border-[rgba(188,230,193,0.55)] bg-white p-8 shadow-[1px_1px_3px_-1px_rgba(0,0,0,0.25)]">
       <div className="flex items-center justify-between">
         <h2 className="text-[30px] font-medium text-black">
           월별 소비 요약
