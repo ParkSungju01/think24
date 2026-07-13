@@ -10,18 +10,29 @@ const ICON_BY_KEY: Record<CategoryStat['key'], string> = {
   purchased: purchaseProductIcon,
 };
 
+const ICON_BG_COLOR_BY_KEY: Record<CategoryStat['key'], string> = {
+  registered: 'bg-[#7ccf8a]',
+  abandoned: 'bg-[#f3c163]',
+  purchased: 'bg-[#ee7680]',
+};
+
 interface CategoryStatRowProps {
   stat: CategoryStat;
 }
 
 export function CategoryStatRow({ stat }: CategoryStatRowProps) {
   const icon = ICON_BY_KEY[stat.key];
+  const iconBgColor = ICON_BG_COLOR_BY_KEY[stat.key];
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">
         {/* 원본 svg 색상을 그대로 보존하기 위해 currentColor 마스킹 없이 img로 렌더링 */}
-        <img src={icon} alt="" className="h-6 w-6" />
+        <div
+          className={`flex size-31.75 items-center justify-center rounded-full ${iconBgColor}`}
+        >
+          <img src={icon} alt="" className="size-16.25" />
+        </div>
         <span className="text-[15px] font-medium text-black">
           {stat.label}
         </span>
