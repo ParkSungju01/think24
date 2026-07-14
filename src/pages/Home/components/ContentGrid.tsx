@@ -28,8 +28,16 @@ export function ContentGrid({
   return (
     // 좌:우 컬럼 폭 비율(원본 836:473 ≈ 64:36)을 유지한 채 유동형으로 늘고 줄어들도록
     // 고정 px 폭 대신 flex-grow 비율(flex-[64]/flex-[36])을 사용
-    <div className="flex min-w-0 gap-15.5">
-      <div className="flex min-w-90 flex-64 flex-col gap-6">
+    // 모바일: 세로로 스택(월별 소비 요약 카드는 숨김), 데스크톱(lg:)은 기존 가로 2컬럼 유지
+    //
+    // 확인 완료: min-w-90/min-w-75는 원래 "1024px 부근"에서만 안전하도록 잡혀 있던 값이라(코드 주석 참고),
+    // 새 브레이크포인트(lg=425px)에 그대로 걸면 425~767px 구간에서 사이드바(218px)와 겹쳐 텍스트가
+    // 한 글자씩 쪼개지는 수준으로 레이아웃이 깨진다. 반면 768px/1920px는 Tailwind 기본 breakpoint인
+    // md(768px)를 그대로 유지하고 있어, min-w를 lg(425px) 대신 md(768px)부터 강제하면
+    // 768px/1920px의 기존 시각 결과는 완전히 동일하게 유지하면서 425~767px 구간만 flex 비율로
+    // 유동 처리해 깨짐을 방지할 수 있다.
+    <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:gap-15.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 lg:flex-64 lg:gap-6 md:min-w-90">
         <SavedAmountCard
           totalSavedAmount={totalSavedAmount}
           monthlySavedAmount={monthlySavedAmount}
@@ -38,8 +46,8 @@ export function ContentGrid({
         />
         <OngoingWorriesCard worries={ongoingWorries} />
       </div>
-      {/* 카드 내부 아이콘 원(127px) + 텍스트가 눌리지 않도록 최소 폭 확보 (1024px 부근 대비) */}
-      <div className="min-w-75 flex-36">
+      {/* 카드 내부 아이콘 원(127px) + 텍스트가 눌리지 않도록 최소 폭 확보 (768px부터, 원본과 동일) */}
+      <div className="hidden min-w-0 lg:block lg:flex-36 md:min-w-75">
         <MonthlySummaryCard selectedMonth={selectedMonth} stats={monthlySummary} />
       </div>
     </div>

@@ -21,7 +21,8 @@ export function HomePage() {
 
   return (
     // 아주 넓은 모니터에서 카드가 과하게 늘어나지 않도록 원본 콘텐츠 폭(1920-409=1511px) 근처로 상한선을 둠
-    <div className="flex max-w-377.75 flex-col gap-8 px-10 py-16">
+    // 모바일: pb-24로 하단 고정 BottomNav/FAB와 겹치지 않도록 여백 확보 (데스크톱은 lg:pb-16으로 복원)
+    <div className="flex max-w-377.75 flex-col gap-4 px-3 pt-6 pb-24 lg:gap-8 lg:px-10 lg:pt-16 lg:pb-16">
       <HomeHeader userName={userName} />
       <ContentGrid
         totalSavedAmount={totalSavedAmount}
