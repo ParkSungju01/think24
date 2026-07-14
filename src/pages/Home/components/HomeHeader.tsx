@@ -6,7 +6,7 @@ interface HomeHeaderProps {
 
 export function HomeHeader({ userName }: HomeHeaderProps) {
   return (
-    <div className="flex items-start justify-between">
+    <div className="flex items-start justify-between px-4">
       <p className="text-[15px] font-medium text-black lg:text-[16px] xl:text-[30px]">
         ✨ {userName}님,
         <br />
