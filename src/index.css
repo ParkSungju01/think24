@@ -3,6 +3,8 @@
 @theme {
   --font-sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
     "Malgun Gothic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  /* docs/plans/home-screen-mobile.md 확정: 홈 화면 모바일/데스크톱 분기 기준을 425px로 오버라이드 */
+  --breakpoint-lg: 425px;
 }
 
 html,
