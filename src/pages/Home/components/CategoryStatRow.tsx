@@ -16,6 +16,14 @@ const ICON_BG_COLOR_BY_KEY: Record<CategoryStat["key"], string> = {
   purchased: "bg-[#ee7680]",
 };
 
+// givup-product.svg는 viewBox(80x88)가 다른 두 아이콘(69x69)보다 커서 내부 여백 때문에
+// 같은 박스 크기로 렌더링하면 시각적으로 작아 보인다 - abandoned만 살짝 키워서 보정
+const ICON_SIZE_BY_KEY: Record<CategoryStat["key"], string> = {
+  registered: "size-17.25",
+  abandoned: "size-21",
+  purchased: "size-17.25",
+};
+
 interface CategoryStatRowProps {
   stat: CategoryStat;
 }
@@ -23,6 +31,7 @@ interface CategoryStatRowProps {
 export function CategoryStatRow({ stat }: CategoryStatRowProps) {
   const icon = ICON_BY_KEY[stat.key];
   const iconBgColor = ICON_BG_COLOR_BY_KEY[stat.key];
+  const iconSize = ICON_SIZE_BY_KEY[stat.key];
 
   return (
     <div className="flex items-center gap-5.75">
@@ -31,7 +40,7 @@ export function CategoryStatRow({ stat }: CategoryStatRowProps) {
         <div
           className={`flex size-31.75 items-center justify-center rounded-full ${iconBgColor}`}
         >
-          <img src={icon} alt="" className="size-17.25" />
+          <img src={icon} alt="" className={iconSize} />
         </div>
       </div>
       <div className="flex flex-col gap-1">

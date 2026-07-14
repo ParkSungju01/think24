@@ -20,10 +20,10 @@ export function MonthlySummaryCard({
         {/* 확인 완료: 이번 범위는 UI만 정적으로 구현, 실제 클릭 인터랙션은 이후 별도 작업 */}
         <button
           type="button"
-          className="flex items-center gap-1 text-[15px] font-medium text-[#666]"
+          className="flex items-center gap-1 text-[17px] font-medium text-black border-[0.5px] border-[#B3B3B3] rounded-[9px] w-19.25 h-9.75 px-3 justify-between"
         >
           {selectedMonth}
-          <ChevronDown className="h-4 w-4" />
+          <ChevronDown className="h-5.5 w-5.5" />
         </button>
       </div>
 
