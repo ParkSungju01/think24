@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom';
-import pigIllustration from '../../../assets/pig.svg';
-import { ROUTES } from '../../../routes/paths';
-import { formatWon } from '../../../utils/format';
+import { Link } from "react-router-dom";
+import pigIllustration from "../../../assets/pig.svg";
+import { ROUTES } from "../../../routes/paths";
+import { formatWon } from "../../../utils/format";
 
 interface SavedAmountCardProps {
   totalSavedAmount: number;
@@ -26,16 +26,18 @@ export function SavedAmountCard({
         <h2 className="text-[17px] font-medium text-black lg:text-[18px] xl:text-[30px]">
           지금까지 절약한 금액
         </h2>
-        <p className="text-black">
-          <span className="text-[28px] font-medium lg:text-[30px] xl:text-[50px]">
-            {formatWon(totalSavedAmount)}
+        <div className="flex items-center gap-4">
+          <p className="text-black">
+            <span className="text-[50px] font-medium">
+              {formatWon(totalSavedAmount)}
+            </span>
+            <span className="text-[20px] font-medium">원</span>
+          </p>
+          <span className="w-fit rounded-md bg-[#eefff0] px-3 py-1.5 text-[15px] font-medium text-black">
+            이번 달 + {formatWon(monthlySavedAmount)}원
           </span>
-          <span className="text-[15px] font-medium xl:text-[20px]">원</span>
-        </p>
-        <span className="w-fit rounded-md bg-[#eefff0] px-3 py-1.5 text-[10px] font-medium text-[#629f41] lg:text-black xl:text-[15px]">
-          이번 달 + {formatWon(monthlySavedAmount)}원
-        </span>
-        <p className="text-[10px] font-medium text-black xl:text-[15px]">
+        </div>
+        <p className="text-[15px] font-medium text-black">
           포기한 상품 {abandonedCount}개 | 구매한 상품 {purchasedCount}개
         </p>
       </div>
