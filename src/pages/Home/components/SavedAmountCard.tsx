@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import pigIllustration from "../../../assets/pig.svg";
 import { ROUTES } from "../../../routes/paths";
 import { formatWon } from "../../../utils/format";
+import { Triangle } from "lucide-react";
 
 interface SavedAmountCardProps {
   totalSavedAmount: number;
@@ -39,8 +40,12 @@ export function SavedAmountCard({
             </span>
             <span className="text-[15px] font-medium xl:text-[20px]">원</span>
           </p>
-          <span className="w-fit rounded-md bg-[#eefff0] px-3 py-1.5 text-[10px] font-medium whitespace-nowrap text-[#629f41] xl:text-[15px] xl:text-black">
-            이번 달 + {formatWon(monthlySavedAmount)}원
+          <span className="w-fit flex gap-1 items-center rounded-md bg-[#eefff0] px-3 py-1.5 text-[10px] font-medium whitespace-nowrap text-[#629f41] xl:text-[15px] xl:text-black">
+            <Triangle
+              className="h-3.25 w-3.25 lg:size-2.25"
+              fill="#7ccf8a"
+              strokeWidth={0}
+            />이번 달 + {formatWon(monthlySavedAmount)}원
           </span>
         </div>
         <p className="text-[10px] font-medium text-black xl:text-[15px]">

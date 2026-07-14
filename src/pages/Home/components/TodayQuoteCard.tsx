@@ -10,7 +10,7 @@ export function TodayQuoteCard({ quote }: TodayQuoteCardProps) {
       <div className="flex h-full items-start">
         <img src={bulbIcon} alt="" className="h-8.5 w-7 shrink-0 xl:h-15.5 xl:w-13" />
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-1 lg:gap-4">
         <div>
           <p className="text-[15px] font-semibold lg:text-[16px] xl:text-[35px]">오늘의 소비 한줄</p>
         </div>

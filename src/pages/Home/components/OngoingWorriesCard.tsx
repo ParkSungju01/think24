@@ -17,7 +17,7 @@ export function OngoingWorriesCard({ worries }: OngoingWorriesCardProps) {
         </h2>
         <Link
           to={ROUTES.worries}
-          className="flex items-center gap-1 text-[13px] font-semibold text-[#666] xl:text-[15px] xl:font-medium"
+          className="flex items-center gap-1 font-semibold text-black xl:text-[13px] lg:text-[20px]"
         >
           전체 보기
           <ChevronRight className="h-4 w-4" />
