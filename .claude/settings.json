@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx --yes playwright --version)",
+      "Bash(npx playwright *)",
+      "Bash(ls ~/Library/Caches/ms-playwright 2>&1)",
+      "Read(//Users/parksungju/Library/Caches/ms-playwright/**)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:5174/)",
+      "Bash(lsof -i :5173 -sTCP:LISTEN)",
+      "mcp__claude_ai_Figma__get_screenshot",
+      "mcp__claude_ai_Figma__get_design_context"
+    ]
+  }
+}
