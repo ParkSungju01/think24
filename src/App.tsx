@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AuthProvider } from './contexts/AuthContext';
 import { HomePage } from './pages/Home';
 import { LoginPage } from './pages/Login';
+import { SignUpPage } from './pages/SignUp';
 import { ROUTES } from './routes/paths';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
     <AuthProvider>
       <Routes>
         <Route path={ROUTES.login} element={<LoginPage />} />
+        <Route path={ROUTES.signup} element={<SignUpPage />} />
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path={ROUTES.home} element={<HomePage />} />
