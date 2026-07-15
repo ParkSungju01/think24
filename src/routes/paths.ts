@@ -1,6 +1,7 @@
 // 라우트 경로 상수 (docs/plans/home-screen.md 확정 컨벤션 기준)
 export const ROUTES = {
   home: '/',
+  login: '/login',
   newWorry: '/worries/new',
   worries: '/worries',
   records: '/records',
