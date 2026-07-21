@@ -14,6 +14,12 @@ interface NotificationsContextValue {
   hasUnread: boolean;
   /** 알림 클릭 시 호출. 다른 화면으로 이동하지 않고 isRead만 true로 바꾼다 (확인 완료) */
   markAsRead: (id: string) => void;
+  /** 모바일 알림 화면(이슈 #17) 오버플로우 메뉴 "모두 읽음으로 표시" 전용. 모든 알림의 isRead를 true로 일괄 변경 */
+  markAllAsRead: () => void;
+  /** 모바일 알림 화면 개별 삭제 확인 모달 "네" 전용. 배열에서 해당 id만 제거 */
+  deleteNotification: (id: string) => void;
+  /** 모바일 알림 화면 오버플로우 메뉴 "알림 전체 삭제" → 확인 모달 "네" 전용. 배열을 빈 배열로 교체 */
+  deleteAll: () => void;
 }
 
 const NotificationsContext = createContext<NotificationsContextValue | undefined>(
@@ -40,6 +46,21 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     );
   };
 
+  // 이슈 #17: 오버플로우 메뉴 "모두 읽음으로 표시" — 모든 아이템을 한 번에 읽음 처리
+  const markAllAsRead = () => {
+    setNotifications((prev) => prev.map((item) => ({ ...item, isRead: true })));
+  };
+
+  // 이슈 #17: 개별 삭제 확인 모달 "네" — 해당 id만 배열에서 제거
+  const deleteNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // 이슈 #17: 오버플로우 메뉴 "알림 전체 삭제" → 확인 모달 "네" — 전체 비우기
+  const deleteAll = () => {
+    setNotifications([]);
+  };
+
   const hasUnread = useMemo(
     () => notifications.some((item) => !item.isRead),
     [notifications],
@@ -49,6 +70,9 @@ export function NotificationsProvider({ children }: { children: ReactNode }) {
     notifications,
     hasUnread,
     markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    deleteAll,
   };
 
   return (

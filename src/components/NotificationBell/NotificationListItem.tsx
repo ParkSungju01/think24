@@ -20,7 +20,12 @@ export function NotificationListItem({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-start gap-2 border-b border-[#f0f0f0] px-3 py-3 text-left last:border-b-0"
+      // 실측(Playwright): 패널 헤더의 케밥 아이콘(MoreVertical, h-4 w-4=16×16, 버튼
+      // h-6 w-6=24×24 안에서 4px씩 인셋)의 오른쪽 끝과 이 시간 텍스트 오른쪽 끝이 기존
+      // px-3(우측 12px)로는 4px 어긋나 있었다. justify-between의 마지막 자식(시간 span)은
+      // 자기 자신의 padding-right로는 오른쪽 끝이 옮겨지지 않아(오른쪽 끝이 부모 경계에
+      // 고정되는 flex 특성), 아이템 버튼 전체의 우측 패딩을 pr-4(16px)로 늘려 정렬을 맞춘다.
+      className="flex w-full items-start gap-2 border-b border-[#f0f0f0] py-3 pr-6 pl-3 text-left last:border-b-0"
     >
       {/* 안읽음 표시: bg-[#a9d592] 8×8(h-2 w-2) dot. dot 자리 자체는 항상 확보해두고 읽음 상태일
           때만 invisible 처리해서, 안읽음/읽음 아이템이 섞여 있어도 썸네일·텍스트 위치가 흔들리지
