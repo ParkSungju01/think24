@@ -12,7 +12,7 @@ type ModalState = { type: 'deleteAll' } | { type: 'deleteOne'; id: string } | nu
 
 /**
  * 이슈 #17: 모바일 전용 알림 화면. 확인 완료 사항대로 AppLayout 밖의 독립 풀스크린
- * 라우트로 구현하고(로그인/회원가입 페이지와 동일한 패턴), lg(425px) 이상 폭에서
+ * 라우트로 구현하고(로그인/회원가입 페이지와 동일한 패턴), lg(426px) 이상 폭에서
  * 접근하면 홈으로 리다이렉트한다. 피그마 목업 자체가 모바일 전용 디자인이라
  * 데스크톱 대응 레이아웃은 존재하지 않는다(확인 완료).
  */
@@ -26,10 +26,12 @@ export function NotificationsPage() {
   const [modal, setModal] = useState<ModalState>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
-  // 확인 완료: lg(425px) 이상 폭에서 이 라우트에 접근하면 홈으로 리다이렉트한다.
+  // 확인 완료: lg(426px) 이상 폭에서 이 라우트에 접근하면 홈으로 리다이렉트한다.
   // 피그마에 데스크톱 버전 목업이 없고, 웹은 이미 별도의 드롭다운 UI(NotificationBell)를 쓴다.
+  // (CSS --breakpoint-lg와 동일하게 426px로 맞춤: Tailwind lg:는 min-width라 425px 자체를
+  // 모바일로 두려면 매치 기준이 426px이어야 CSS/JS 판단이 정확히 일치한다.)
   useEffect(() => {
-    const query = window.matchMedia('(min-width: 425px)');
+    const query = window.matchMedia('(min-width: 426px)');
     if (query.matches) {
       navigate(ROUTES.home, { replace: true });
       return;

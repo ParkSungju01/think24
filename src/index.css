@@ -3,8 +3,12 @@
 @theme {
   --font-sans: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo",
     "Malgun Gothic", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  /* docs/plans/home-screen-mobile.md 확정: 홈 화면 모바일/데스크톱 분기 기준을 425px로 오버라이드 */
-  --breakpoint-lg: 425px;
+  /* docs/plans/home-screen-mobile.md 확정: 홈 화면 모바일/데스크톱 분기 기준을 425px로 오버라이드.
+     이슈 #17 추가 요청: Tailwind lg: 유틸리티는 min-width(425px 이상이면 활성화)로 동작해 "425px는
+     모바일, 426px부터 데스크톱"을 만들려면 425px 자체는 lg: 스타일이 켜지면 안 된다. 그래서 브레이크
+     포인트 값 자체를 426px로 올려, 425px는 그대로 기본(모바일) 스타일이 적용되고 426px부터 lg: 스타일이
+     켜지도록 한다. */
+  --breakpoint-lg: 426px;
   /* 리뷰 재작업(사용자 결정 b): 425px에서 사이드바 등 데스크톱 레이아웃 구조는 그대로 전환되지만,
      타이포/이미지까지 곧바로 완전한 데스크톱 크기를 쓰면 425~1023px 구간에서 글자 단위 줄바꿈이 발생한다.
      이 구간 전용 중간 크기 값을 담기 위해 원래 미사용이던 xl(기본 1280px)을 1024px로 재정의해서
