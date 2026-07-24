@@ -55,6 +55,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       return { error: error.message };
     }
+    // Supabase는 이메일 열거 공격 방지를 위해 이미 가입된 이메일로 signUp을 다시
+    // 호출해도 에러를 주지 않고 "성공한 것처럼" 응답한다. 이 경우 data.user는 있지만
+    // data.user.identities가 빈 배열([])로 온다 — 신규 가입과 구분하는 유일한 신호.
+    if (data.user && data.user.identities?.length === 0) {
+      return { error: '이미 가입된 이메일입니다.' };
+    }
     // 이메일 확인이 켜져 있으면 signUp 직후 session이 null로 온다
     return {
       error: null,

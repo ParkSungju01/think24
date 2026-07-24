@@ -6,7 +6,6 @@ import { BrandPanel } from '../../components/auth/BrandPanel';
 import { SubmitButton } from '../../components/auth/SubmitButton';
 import { useAuth } from '../../contexts/AuthContext';
 import { createProfile } from '../../lib/profiles';
-import { checkEmailAvailability } from '../../lib/mockEmailVerification';
 import { markSignupJustCompleted } from '../../lib/signupFlag';
 import { ROUTES } from '../../routes/paths';
 import {
@@ -29,29 +28,6 @@ const BANNED_NICKNAME_WORDS = [
   '존나',
 ];
 
-type EmailCheckStatus = 'idle' | 'checking' | 'available' | 'duplicate';
-
-function FieldActionButton({
-  children,
-  onClick,
-  disabled,
-}: {
-  children: ReactNode;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className="h-11 shrink-0 rounded-xl bg-[#e9f6e4] px-4 text-[14px] font-medium whitespace-nowrap text-[#3e9b48] transition-opacity disabled:opacity-50"
-    >
-      {children}
-    </button>
-  );
-}
-
 export function SignUpPage() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
@@ -59,13 +35,11 @@ export function SignUpPage() {
   // 2-1 닉네임
   const [nickname, setNickname] = useState('');
 
-  // 2-2 이메일 + 중복 확인 (mock)
+  // 2-2 이메일 (중복 여부는 최종 제출 시 signUp 호출로만 판별, AuthContext 참고)
   const [email, setEmail] = useState('');
   const [emailFormatError, setEmailFormatError] = useState<string | null>(
     null,
   );
-  const [emailCheckStatus, setEmailCheckStatus] =
-    useState<EmailCheckStatus>('idle');
 
   // 2-4 비밀번호 / 비밀번호 확인
   const [password, setPassword] = useState('');
@@ -73,13 +47,6 @@ export function SignUpPage() {
 
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleEmailChange = (value: string) => {
-    setEmail(value);
-    if (emailCheckStatus !== 'idle') {
-      setEmailCheckStatus('idle');
-    }
-  };
 
   const handleEmailBlur = () => {
     if (email.length === 0) {
@@ -89,12 +56,6 @@ export function SignUpPage() {
     setEmailFormatError(
       EMAIL_REGEX.test(email) ? null : '이메일 형식이 올바르지 않습니다.',
     );
-  };
-
-  const handleCheckEmail = async () => {
-    setEmailCheckStatus('checking');
-    const result = await checkEmailAvailability();
-    setEmailCheckStatus(result);
   };
 
   const nicknameError = (() => {
@@ -119,34 +80,13 @@ export function SignUpPage() {
   const isPasswordValid = passwordError === null && isPasswordStrongEnough(password);
   const isConfirmValid = passwordConfirm.length > 0 && !confirmMismatch;
 
-  const isFormValid =
-    isNicknameValid &&
-    emailCheckStatus === 'available' &&
-    isPasswordValid &&
-    isConfirmValid;
+  const isEmailValid = EMAIL_REGEX.test(email);
 
-  const emailMessage: ReactNode = emailFormatError
-    ? emailFormatError
-    : emailCheckStatus === 'checking'
-      ? '이메일 확인 중...'
-      : emailCheckStatus === 'available'
-        ? '사용 가능한 이메일입니다.'
-        : emailCheckStatus === 'duplicate'
-          ? (
-              <>
-                이미 가입된 이메일입니다.{' '}
-                <Link to={ROUTES.login} className="underline">
-                  로그인하시겠어요?
-                </Link>
-              </>
-            )
-          : undefined;
-  const emailMessageTone =
-    emailFormatError || emailCheckStatus === 'duplicate'
-      ? 'error'
-      : emailCheckStatus === 'available'
-        ? 'success'
-        : 'hint';
+  const isFormValid =
+    isNicknameValid && isEmailValid && isPasswordValid && isConfirmValid;
+
+  const emailMessage: ReactNode = emailFormatError ?? undefined;
+  const emailMessageTone = 'error';
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -226,20 +166,10 @@ export function SignUpPage() {
               autoComplete="email"
               placeholder="example@meomchit.com"
               value={email}
-              onChange={handleEmailChange}
+              onChange={setEmail}
               onBlur={handleEmailBlur}
               message={emailMessage}
               messageTone={emailMessageTone}
-              trailingAction={
-                <FieldActionButton
-                  onClick={handleCheckEmail}
-                  disabled={
-                    !EMAIL_REGEX.test(email) || emailCheckStatus === 'checking'
-                  }
-                >
-                  중복 확인
-                </FieldActionButton>
-              }
             />
 
             <AuthField
