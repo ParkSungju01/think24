@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { fetchNickname } from '../../lib/profiles';
 import { fetchRecentWorries } from '../../lib/worries';
 import {
   computeCategoryCounts,
@@ -37,6 +38,10 @@ export function useHomeData(): UseHomeDataResult {
 
       try {
         const now = new Date();
+        const emailPrefix = user.email?.split('@')[0] ?? '';
+        // profiles 테이블에 닉네임이 없는 경우(테이블 생성 이전 계정 등)를 대비해
+        // 조회 실패/데이터 없음이면 이메일 @ 앞부분으로 폴백한다.
+        const nickname = await fetchNickname(user.id);
         const worries = await fetchRecentWorries(
           user.id,
           startOfPreviousMonth(now),
@@ -52,8 +57,7 @@ export function useHomeData(): UseHomeDataResult {
         if (cancelled) return;
 
         setData({
-          // 사용자 확인 완료: 별도 프로필/이름 필드가 없어 이메일의 @ 앞부분을 이름으로 사용
-          userName: user.email?.split('@')[0] ?? '',
+          userName: nickname ?? emailPrefix,
           // 보류: "절약 금액"의 정확한 정의가 아직 결정되지 않아 하드코딩 유지
           // (docs/plans/backend-setup.md 보류 섹션 참고 — 실제 로직 연결 금지)
           totalSavedAmount: 0,

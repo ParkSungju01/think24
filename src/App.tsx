@@ -6,7 +6,6 @@ import { NotificationsProvider } from './contexts/NotificationsContext';
 import { HomePage } from './pages/Home';
 import { LoginPage } from './pages/Login';
 import { NotificationsPage } from './pages/Notifications';
-import { ResetPasswordPage } from './pages/ResetPassword';
 import { SignUpPage } from './pages/SignUp';
 import { SignupCompletePage } from './pages/SignupComplete';
 import { ROUTES } from './routes/paths';
@@ -21,7 +20,6 @@ function App() {
         <Routes>
           <Route path={ROUTES.login} element={<LoginPage />} />
           <Route path={ROUTES.signup} element={<SignUpPage />} />
-          <Route path={ROUTES.resetPassword} element={<ResetPasswordPage />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
               <Route path={ROUTES.home} element={<HomePage />} />

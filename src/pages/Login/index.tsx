@@ -172,12 +172,6 @@ export function LoginPage() {
                 로그인 상태 유지
               </span>
             </div>
-            <Link
-              to={ROUTES.resetPassword}
-              className="text-[14px] font-medium text-[#3e9b48]"
-            >
-              비밀번호를 잊으셨나요?
-            </Link>
           </div>
 
           <div>
