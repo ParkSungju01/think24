@@ -12,6 +12,8 @@ interface AuthActionResult {
   error: string | null;
   /** 회원가입 직후 이메일 확인이 필요해 세션이 아직 없는 경우 true */
   needsEmailConfirmation?: boolean;
+  /** 회원가입 성공 시 생성된 사용자 id. profiles 테이블 insert 등 후속 처리에 사용 */
+  userId?: string;
 }
 
 interface AuthContextValue {
@@ -54,7 +56,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { error: error.message };
     }
     // 이메일 확인이 켜져 있으면 signUp 직후 session이 null로 온다
-    return { error: null, needsEmailConfirmation: !data.session };
+    return {
+      error: null,
+      needsEmailConfirmation: !data.session,
+      userId: data.user?.id,
+    };
   };
 
   const signIn: AuthContextValue['signIn'] = async (email, password) => {
