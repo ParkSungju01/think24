@@ -7,6 +7,7 @@ import { HomePage } from './pages/Home';
 import { LoginPage } from './pages/Login';
 import { NotificationsPage } from './pages/Notifications';
 import { SignUpPage } from './pages/SignUp';
+import { SignupCompletePage } from './pages/SignupComplete';
 import { ROUTES } from './routes/paths';
 
 function App() {
@@ -27,6 +28,13 @@ function App() {
                 밖의 독립 풀스크린 라우트다(로그인/회원가입 페이지와 동일한 셸 패턴). 다만 로그인
                 여부는 필요하므로 ProtectedRoute 안에는 유지하되 AppLayout만 벗어난다. */}
             <Route path={ROUTES.notifications} element={<NotificationsPage />} />
+            {/* 이슈 #21 확인 완료: 가입 완료·목표 설정 화면도 동일하게 AppLayout 밖의 독립
+                풀스크린 라우트다. 로그인 필요 + sessionStorage 플래그(회원가입 직후에만 true)로
+                직접 URL 접근을 막는다 (SignupCompletePage 내부에서 처리). */}
+            <Route
+              path={ROUTES.signupComplete}
+              element={<SignupCompletePage />}
+            />
           </Route>
         </Routes>
       </NotificationsProvider>

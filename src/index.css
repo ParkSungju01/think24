@@ -23,6 +23,13 @@
      너무 좁아(월별 소비 요약 카드의 지름 127px 아이콘조차 담을 수 없음) 폰트 크기 조정만으로는 해결되지
      않는 문제라 판단했다. 사이드바 자체의 전환 시점(425px)은 변경하지 않았다. */
   --breakpoint-xl: 1024px;
+
+  /* 로그인/회원가입 화면 전용 폰트 (사용자 확인 완료: Google Fonts로 Noto Sans KR 로드).
+     홈 화면 등 기존 화면은 시스템 폰트(--font-sans)를 그대로 유지하고, 이 토큰은
+     인증 화면(auth) 컴포넌트에서만 `font-noto` 유틸리티로 명시적으로 적용한다. */
+  --font-noto: "Noto Sans KR", -apple-system, BlinkMacSystemFont,
+    "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", Roboto, Helvetica,
+    Arial, sans-serif;
 }
 
 html,

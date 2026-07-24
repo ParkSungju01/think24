@@ -12,6 +12,8 @@ interface AuthActionResult {
   error: string | null;
   /** 회원가입 직후 이메일 확인이 필요해 세션이 아직 없는 경우 true */
   needsEmailConfirmation?: boolean;
+  /** 회원가입 성공 시 생성된 사용자 id. profiles 테이블 insert 등 후속 처리에 사용 */
+  userId?: string;
 }
 
 interface AuthContextValue {
@@ -53,8 +55,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) {
       return { error: error.message };
     }
+    // Supabase는 이메일 열거 공격 방지를 위해 이미 가입된 이메일로 signUp을 다시
+    // 호출해도 에러를 주지 않고 "성공한 것처럼" 응답한다. 이 경우 data.user는 있지만
+    // data.user.identities가 빈 배열([])로 온다 — 신규 가입과 구분하는 유일한 신호.
+    if (data.user && data.user.identities?.length === 0) {
+      return { error: '이미 가입된 이메일입니다.' };
+    }
     // 이메일 확인이 켜져 있으면 signUp 직후 session이 null로 온다
-    return { error: null, needsEmailConfirmation: !data.session };
+    return {
+      error: null,
+      needsEmailConfirmation: !data.session,
+      userId: data.user?.id,
+    };
   };
 
   const signIn: AuthContextValue['signIn'] = async (email, password) => {

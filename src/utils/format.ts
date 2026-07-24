@@ -12,6 +12,12 @@ export function formatRemainingTime(totalSeconds: number): string {
   return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
 }
 
+/** 천 단위 콤마가 포함된 숫자 문자열(예: "100,000")을 숫자로 되돌린다 */
+export function parseWon(formatted: string): number {
+  const digitsOnly = formatted.replace(/[^0-9]/g, '');
+  return digitsOnly ? Number(digitsOnly) : 0;
+}
+
 /**
  * 월별 소비 요약 드롭다운의 기본 선택값으로 쓰는 "현재 월" 라벨.
  * 목데이터 상수가 아니라 실제 호출 시점의 월을 반영해야 해서 컴포넌트 쪽(HomePage)에서 호출한다.
