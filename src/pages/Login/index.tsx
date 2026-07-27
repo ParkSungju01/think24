@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Check, Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import logo from '../../assets/logo.svg';
 import { AuthField } from '../../components/auth/AuthField';
 import { BrandPanel } from '../../components/auth/BrandPanel';
 import { SubmitButton } from '../../components/auth/SubmitButton';
@@ -96,24 +97,25 @@ export function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <BrandPanel />
-      <div className="flex flex-1 items-center justify-center px-4 py-12 font-noto sm:px-6">
+    <>
+      {/* 모바일 레이아웃 (< 426px, 피그마 App 로그인 182:352) */}
+      <div className="flex flex-col px-6 pt-18 font-noto lg:hidden">
+        <div className="flex flex-col items-center gap-2">
+          <img src={logo} alt="" className="h-23.25 w-23" />
+          <span className="text-[30px] font-bold text-[#1f2420]">멈칫</span>
+          <p className="text-center text-[13px] text-[#899086]">
+            잠시 멈추면 더 좋은 선택이 보입니다
+          </p>
+        </div>
+
         <form
           onSubmit={handleSignIn}
           noValidate
-          className="flex w-full max-w-100 flex-col gap-8.5"
+          className="mt-6 flex flex-col gap-6"
         >
-          <div>
-            <h1 className="text-[26px] font-bold text-[#1f2420]">로그인</h1>
-            <p className="mt-2.5 text-[14px] text-[#899086]">
-              다시 만나서 반가워요. 오늘도 현명한 소비 하세요!
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-3.5">
             <AuthField
-              id="email"
+              id="mobile-email"
               label="이메일"
               type="email"
               autoComplete="email"
@@ -121,19 +123,23 @@ export function LoginPage() {
               value={email}
               onChange={setEmail}
               onBlur={handleEmailBlur}
-              inputHeightClassName="h-11.5"
+              inputHeightClassName="h-11.25"
+              labelClassName="text-[13px]"
+              inputTextClassName="text-[14px]"
               message={emailError}
               messageTone="error"
             />
             <AuthField
-              id="password"
+              id="mobile-password"
               label="비밀번호"
               type={passwordVisible ? 'text' : 'password'}
               autoComplete="current-password"
               placeholder="비밀번호를 입력해 주세요"
               value={password}
               onChange={handlePasswordChange}
-              inputHeightClassName="h-11.5"
+              inputHeightClassName="h-11.25"
+              labelClassName="text-[13px]"
+              inputTextClassName="text-[14px]"
               rightSlot={
                 <button
                   type="button"
@@ -169,7 +175,7 @@ export function LoginPage() {
                 className="text-[14px] text-[#1f2420]"
                 title="공용 PC에서는 로그인 상태 유지 사용에 주의해 주세요."
               >
-                로그인 상태 유지
+                자동 로그인
               </span>
             </div>
           </div>
@@ -178,6 +184,8 @@ export function LoginPage() {
             <SubmitButton
               active={isFormValid && !isLocked}
               isSubmitting={isSubmitting}
+              heightClassName="h-12"
+              textClassName="text-[15px]"
             >
               로그인
             </SubmitButton>
@@ -188,7 +196,7 @@ export function LoginPage() {
             )}
           </div>
 
-          <p className="text-center text-[14px] text-[#899086]">
+          <p className="text-center text-[13px] text-[#899086]">
             아직 회원이 아니신가요?{' '}
             <Link to={ROUTES.signup} className="font-bold text-[#3e9b48]">
               회원가입
@@ -196,7 +204,114 @@ export function LoginPage() {
           </p>
         </form>
       </div>
-    </div>
+
+      {/* 데스크톱 레이아웃 (426px 이상, 기존 구현 그대로) */}
+      <div className="hidden min-h-screen lg:flex">
+        <BrandPanel />
+        <div className="flex flex-1 items-center justify-center px-4 py-12 font-noto sm:px-6">
+          <form
+            onSubmit={handleSignIn}
+            noValidate
+            className="flex w-full max-w-100 flex-col gap-8.5"
+          >
+            <div>
+              <h1 className="text-[26px] font-bold text-[#1f2420]">로그인</h1>
+              <p className="mt-2.5 text-[14px] text-[#899086]">
+                다시 만나서 반가워요. 오늘도 현명한 소비 하세요!
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              <AuthField
+                id="email"
+                label="이메일"
+                type="email"
+                autoComplete="email"
+                placeholder="example@meomchit.com"
+                value={email}
+                onChange={setEmail}
+                onBlur={handleEmailBlur}
+                inputHeightClassName="h-11.5"
+                message={emailError}
+                messageTone="error"
+              />
+              <AuthField
+                id="password"
+                label="비밀번호"
+                type={passwordVisible ? 'text' : 'password'}
+                autoComplete="current-password"
+                placeholder="비밀번호를 입력해 주세요"
+                value={password}
+                onChange={handlePasswordChange}
+                inputHeightClassName="h-11.5"
+                rightSlot={
+                  <button
+                    type="button"
+                    onClick={() => setPasswordVisible((visible) => !visible)}
+                    className="text-[#899086]"
+                    aria-label={
+                      passwordVisible ? '비밀번호 숨기기' : '비밀번호 표시'
+                    }
+                  >
+                    {passwordVisible ? (
+                      <EyeOff size={18} />
+                    ) : (
+                      <Eye size={18} />
+                    )}
+                  </button>
+                }
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setKeepLoggedIn((value) => !value)}
+                  aria-pressed={keepLoggedIn}
+                  className={`flex h-5 w-5 items-center justify-center rounded-md border transition-colors ${
+                    keepLoggedIn
+                      ? 'border-[#4fb75b] bg-[#4fb75b]'
+                      : 'border-[#e7eae4] bg-white'
+                  }`}
+                >
+                  {keepLoggedIn && (
+                    <Check className="h-3 w-3 text-white" strokeWidth={3} />
+                  )}
+                </button>
+                <span
+                  className="text-[14px] text-[#1f2420]"
+                  title="공용 PC에서는 로그인 상태 유지 사용에 주의해 주세요."
+                >
+                  로그인 상태 유지
+                </span>
+              </div>
+            </div>
+
+            <div>
+              <SubmitButton
+                active={isFormValid && !isLocked}
+                isSubmitting={isSubmitting}
+              >
+                로그인
+              </SubmitButton>
+              {displayedSubmitError && (
+                <p className="mt-3 text-center text-[13px] text-[#e05b4e]">
+                  {displayedSubmitError}
+                </p>
+              )}
+            </div>
+
+            <p className="text-center text-[14px] text-[#899086]">
+              아직 회원이 아니신가요?{' '}
+              <Link to={ROUTES.signup} className="font-bold text-[#3e9b48]">
+                회원가입
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
-import { Check, Info } from 'lucide-react';
+import { Check, ChevronLeft, Info } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthField } from '../../components/auth/AuthField';
 import { BrandPanel } from '../../components/auth/BrandPanel';
@@ -130,93 +130,112 @@ export function SignUpPage() {
   };
 
   return (
-    <div className="flex min-h-screen">
-      <BrandPanel />
-      <div className="flex flex-1 items-center justify-center px-4 py-12 font-noto sm:px-6">
+    <>
+      {/* 모바일 레이아웃 (< 426px, 피그마 App 회원가입 182:395) */}
+      <div className="flex flex-col px-6 font-noto lg:hidden">
+        <header className="flex items-center gap-3 pt-14">
+          <button
+            type="button"
+            aria-label="뒤로가기"
+            onClick={() => navigate(ROUTES.login)}
+            className="flex h-8 w-8 items-center justify-center text-[#1f2420]"
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <h1 className="text-[18px] font-bold text-[#1f2420]">회원가입</h1>
+        </header>
+
         <form
           onSubmit={handleSubmit}
           noValidate
-          className="flex w-full max-w-110 flex-col gap-7"
+          className="mt-5 flex flex-col gap-5"
         >
+          <AuthField
+            id="mobile-nickname"
+            label="닉네임"
+            required
+            placeholder="2~10자, 한글/영문/숫자"
+            value={nickname}
+            onChange={setNickname}
+            maxLength={10}
+            inputHeightClassName="h-10.75"
+            labelClassName="text-[13px]"
+            messageClassName="text-[11px]"
+            message={nicknameError ?? undefined}
+            messageTone="error"
+          />
+
+          <AuthField
+            id="mobile-email"
+            label="이메일"
+            required
+            type="email"
+            autoComplete="email"
+            placeholder="example@meomchit.com"
+            value={email}
+            onChange={setEmail}
+            onBlur={handleEmailBlur}
+            inputHeightClassName="h-10.75"
+            labelClassName="text-[13px]"
+            messageClassName="text-[11px]"
+            message={emailMessage}
+            messageTone={emailMessageTone}
+          />
+
+          <AuthField
+            id="mobile-password"
+            label="비밀번호"
+            required
+            type="password"
+            autoComplete="new-password"
+            placeholder="8~20자, 영문/숫자/특수문자 조합"
+            value={password}
+            onChange={(value) => setPassword(value.replace(/\s/g, ''))}
+            inputHeightClassName="h-10.75"
+            labelClassName="text-[13px]"
+            messageClassName="text-[11px]"
+            message={
+              passwordError ?? (
+                <>
+                  <Info className="h-3 w-3" /> 영문 대소문자, 숫자,
+                  특수문자를 포함해 8자 이상 입력해 주세요.
+                </>
+              )
+            }
+            messageTone={passwordError ? 'error' : 'hint'}
+          />
+
+          <AuthField
+            id="mobile-password-confirm"
+            label="비밀번호 확인"
+            required
+            type="password"
+            autoComplete="new-password"
+            placeholder="비밀번호를 한 번 더 입력해 주세요"
+            value={passwordConfirm}
+            onChange={(value) => setPasswordConfirm(value.replace(/\s/g, ''))}
+            inputHeightClassName="h-10.75"
+            labelClassName="text-[13px]"
+            messageClassName="text-[11px]"
+            message={
+              confirmMismatch ? (
+                '비밀번호가 일치하지 않습니다.'
+              ) : passwordConfirm.length > 0 ? (
+                <>
+                  <Check className="h-3 w-3" strokeWidth={3} /> 비밀번호가
+                  일치합니다.
+                </>
+              ) : undefined
+            }
+            messageTone={confirmMismatch ? 'error' : 'success'}
+          />
+
           <div>
-            <h1 className="text-[26px] font-bold text-[#1f2420]">회원가입</h1>
-            <p className="mt-2.5 text-[14px] text-[#899086]">
-              1분이면 충분해요. 멈칫과 함께 절약을 시작해 보세요.
-            </p>
-          </div>
-
-          <div className="flex flex-col gap-5">
-            <AuthField
-              id="nickname"
-              label="닉네임"
-              required
-              placeholder="2~10자, 한글/영문/숫자"
-              value={nickname}
-              onChange={setNickname}
-              maxLength={10}
-              message={nicknameError ?? undefined}
-              messageTone="error"
-            />
-
-            <AuthField
-              id="email"
-              label="이메일"
-              required
-              type="email"
-              autoComplete="email"
-              placeholder="example@meomchit.com"
-              value={email}
-              onChange={setEmail}
-              onBlur={handleEmailBlur}
-              message={emailMessage}
-              messageTone={emailMessageTone}
-            />
-
-            <AuthField
-              id="password"
-              label="비밀번호"
-              required
-              type="password"
-              autoComplete="new-password"
-              placeholder="8~20자, 영문/숫자/특수문자 조합"
-              value={password}
-              onChange={(value) => setPassword(value.replace(/\s/g, ''))}
-              message={
-                passwordError ?? (
-                  <>
-                    <Info className="h-3 w-3" /> 영문 대소문자, 숫자,
-                    특수문자를 포함해 8자 이상 입력해 주세요.
-                  </>
-                )
-              }
-              messageTone={passwordError ? 'error' : 'hint'}
-            />
-
-            <AuthField
-              id="password-confirm"
-              label="비밀번호 확인"
-              required
-              type="password"
-              autoComplete="new-password"
-              placeholder="비밀번호를 한 번 더 입력해 주세요"
-              value={passwordConfirm}
-              onChange={(value) => setPasswordConfirm(value.replace(/\s/g, ''))}
-              message={
-                confirmMismatch ? (
-                  '비밀번호가 일치하지 않습니다.'
-                ) : passwordConfirm.length > 0 ? (
-                  <>
-                    <Check className="h-3 w-3" strokeWidth={3} /> 비밀번호가
-                    일치합니다.
-                  </>
-                ) : undefined
-              }
-              messageTone={confirmMismatch ? 'error' : 'success'}
-            />
-          </div>
-
-          <div>
-            <SubmitButton active={isFormValid} isSubmitting={isSubmitting}>
+            <SubmitButton
+              active={isFormValid}
+              isSubmitting={isSubmitting}
+              heightClassName="h-12"
+            >
               가입하기
             </SubmitButton>
             {submitError && (
@@ -225,16 +244,120 @@ export function SignUpPage() {
               </p>
             )}
           </div>
-
-          <p className="text-center text-[14px] text-[#899086]">
-            이미 계정이 있으신가요?{' '}
-            <Link to={ROUTES.login} className="font-bold text-[#3e9b48]">
-              로그인
-            </Link>
-          </p>
         </form>
       </div>
-    </div>
+
+      {/* 데스크톱 레이아웃 (426px 이상, 기존 구현 그대로) */}
+      <div className="hidden min-h-screen lg:flex">
+        <BrandPanel />
+        <div className="flex flex-1 items-center justify-center px-4 py-12 font-noto sm:px-6">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex w-full max-w-110 flex-col gap-7"
+          >
+            <div>
+              <h1 className="text-[26px] font-bold text-[#1f2420]">
+                회원가입
+              </h1>
+              <p className="mt-2.5 text-[14px] text-[#899086]">
+                1분이면 충분해요. 멈칫과 함께 절약을 시작해 보세요.
+              </p>
+            </div>
+
+            <div className="flex flex-col gap-5">
+              <AuthField
+                id="nickname"
+                label="닉네임"
+                required
+                placeholder="2~10자, 한글/영문/숫자"
+                value={nickname}
+                onChange={setNickname}
+                maxLength={10}
+                message={nicknameError ?? undefined}
+                messageTone="error"
+              />
+
+              <AuthField
+                id="email"
+                label="이메일"
+                required
+                type="email"
+                autoComplete="email"
+                placeholder="example@meomchit.com"
+                value={email}
+                onChange={setEmail}
+                onBlur={handleEmailBlur}
+                message={emailMessage}
+                messageTone={emailMessageTone}
+              />
+
+              <AuthField
+                id="password"
+                label="비밀번호"
+                required
+                type="password"
+                autoComplete="new-password"
+                placeholder="8~20자, 영문/숫자/특수문자 조합"
+                value={password}
+                onChange={(value) => setPassword(value.replace(/\s/g, ''))}
+                message={
+                  passwordError ?? (
+                    <>
+                      <Info className="h-3 w-3" /> 영문 대소문자, 숫자,
+                      특수문자를 포함해 8자 이상 입력해 주세요.
+                    </>
+                  )
+                }
+                messageTone={passwordError ? 'error' : 'hint'}
+              />
+
+              <AuthField
+                id="password-confirm"
+                label="비밀번호 확인"
+                required
+                type="password"
+                autoComplete="new-password"
+                placeholder="비밀번호를 한 번 더 입력해 주세요"
+                value={passwordConfirm}
+                onChange={(value) =>
+                  setPasswordConfirm(value.replace(/\s/g, ''))
+                }
+                message={
+                  confirmMismatch ? (
+                    '비밀번호가 일치하지 않습니다.'
+                  ) : passwordConfirm.length > 0 ? (
+                    <>
+                      <Check className="h-3 w-3" strokeWidth={3} /> 비밀번호가
+                      일치합니다.
+                    </>
+                  ) : undefined
+                }
+                messageTone={confirmMismatch ? 'error' : 'success'}
+              />
+            </div>
+
+            <div>
+              <SubmitButton active={isFormValid} isSubmitting={isSubmitting}>
+                가입하기
+              </SubmitButton>
+              {submitError && (
+                <p className="mt-3 text-center text-[13px] text-[#e05b4e]">
+                  {submitError}
+                </p>
+              )}
+            </div>
+
+            <p className="text-center text-[14px] text-[#899086]">
+              이미 계정이 있으신가요?{' '}
+              <Link to={ROUTES.login} className="font-bold text-[#3e9b48]">
+                로그인
+              </Link>
+            </p>
+          </form>
+        </div>
+      </div>
+    </>
   );
 }
 
