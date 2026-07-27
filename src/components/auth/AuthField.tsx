@@ -21,6 +21,12 @@ interface AuthFieldProps
   messageTone?: MessageTone;
   /** 피그마 실측값이 화면마다 44px/46px로 미세하게 달라 화면별로 지정 (기본 44px = h-11) */
   inputHeightClassName?: string;
+  /** 라벨 폰트 크기 (모바일 화면은 데스크톱보다 1px 작은 값을 사용, 기본 14px) */
+  labelClassName?: string;
+  /** 입력 텍스트 폰트 크기 (모바일 화면은 데스크톱보다 1px 작은 값을 사용, 기본 15px) */
+  inputTextClassName?: string;
+  /** 하단 안내/에러/성공 문구 폰트 크기 (모바일 화면은 데스크톱보다 1px 작은 값을 사용, 기본 12px) */
+  messageClassName?: string;
 }
 
 const MESSAGE_TONE_CLASS: Record<MessageTone, string> = {
@@ -41,6 +47,9 @@ export function AuthField({
   message,
   messageTone = 'hint',
   inputHeightClassName = 'h-11',
+  labelClassName = 'text-[14px]',
+  inputTextClassName = 'text-[15px]',
+  messageClassName = 'text-[12px]',
   ...inputProps
 }: AuthFieldProps) {
   // message가 실제로 있을 때만 에러 테두리를 표시한다 (tone만 'error'로 미리 고정해 둔 채
@@ -51,7 +60,7 @@ export function AuthField({
     <div>
       <label
         htmlFor={id}
-        className="mb-2 flex items-center text-[14px] font-medium text-[#1f2420]"
+        className={`mb-2 flex items-center font-medium text-[#1f2420] ${labelClassName}`}
       >
         {label}
         {required && <span className="ml-0.5 text-[#e05b4e]">*</span>}
@@ -62,7 +71,7 @@ export function AuthField({
             id={id}
             value={value}
             onChange={(event) => onChange(event.target.value)}
-            className={`w-full ${inputHeightClassName} rounded-xl border bg-[#fafbf8] px-3.75 text-[15px] text-[#1f2420] outline-none transition-colors placeholder:text-[#adb3a9] focus:border-[#4fb75b] ${
+            className={`w-full ${inputHeightClassName} rounded-xl border bg-[#fafbf8] px-3.75 ${inputTextClassName} text-[#1f2420] outline-none transition-colors placeholder:text-[#adb3a9] focus:border-[#4fb75b] ${
               rightSlot ? 'pr-16' : ''
             } ${hasError ? 'border-[#e05b4e]' : 'border-[#e7eae4]'}`}
             {...inputProps}
@@ -77,7 +86,7 @@ export function AuthField({
       </div>
       {message && (
         <p
-          className={`mt-2 flex items-center gap-1 text-[12px] ${MESSAGE_TONE_CLASS[messageTone]}`}
+          className={`mt-2 flex items-center gap-1 ${messageClassName} ${MESSAGE_TONE_CLASS[messageTone]}`}
         >
           {message}
         </p>
