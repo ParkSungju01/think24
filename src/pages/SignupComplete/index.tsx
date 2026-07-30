@@ -183,7 +183,7 @@ export function SignupCompletePage() {
             <h1 className="text-[26px] font-bold text-[#1f2420]">
               가입이 완료되었어요!
             </h1>
-            <p className="mt-2 text-[14px] leading-[22px] text-[#899086]">
+            <p className="mt-2 text-[14px] leading-5.5 text-[#899086]">
               이번 달 절약 목표를 설정하면
               <br />
               대시보드에서 달성률을 한 눈에 볼 수 있어요.

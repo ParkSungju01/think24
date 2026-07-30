@@ -7,6 +7,10 @@ import {
 } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import {
+  fetchNickname,
+  updateNickname as updateNicknameRequest,
+} from '../lib/profiles';
 
 interface AuthActionResult {
   error: string | null;
@@ -20,9 +24,16 @@ interface AuthContextValue {
   user: User | null;
   session: Session | null;
   isLoading: boolean;
+  /** profiles 테이블에 저장된 닉네임 (없으면 null — 호출부에서 이메일 prefix 등으로 폴백) */
+  nickname: string | null;
+  /** 닉네임 조회가 아직 끝나지 않은 동안 true. 로그인 직후 잠깐 존재 */
+  isNicknameLoading: boolean;
   signUp: (email: string, password: string) => Promise<AuthActionResult>;
   signIn: (email: string, password: string) => Promise<AuthActionResult>;
   signOut: () => Promise<void>;
+  /** 마이페이지에서 닉네임 저장 시 호출. 성공하면 전역 nickname 상태도 즉시 갱신해
+   * 홈 화면 등 닉네임을 표시하는 다른 화면에 바로 반영되게 한다 (docs/plans/mypage.md 확인 완료 11). */
+  updateNickname: (nickname: string) => Promise<{ error: string | null }>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -30,6 +41,8 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [nickname, setNickname] = useState<string | null>(null);
+  const [isNicknameLoading, setIsNicknameLoading] = useState(true);
 
   // 최상위에서 한 번만 세션 상태를 구독해 여러 화면(홈 등)에 user_id를 전파한다
   useEffect(() => {
@@ -49,6 +62,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       subscription.unsubscribe();
     };
   }, []);
+
+  // 세션의 유저가 바뀔 때마다(로그인/로그아웃) 닉네임을 다시 조회한다. 여러 화면(홈/마이페이지)이
+  // 각자 fetchNickname을 부르는 대신 여기서 한 번만 조회해 전역으로 공유한다.
+  useEffect(() => {
+    const userId = session?.user?.id;
+    let cancelled = false;
+
+    (async () => {
+      if (!userId) {
+        setNickname(null);
+        setIsNicknameLoading(false);
+        return;
+      }
+
+      setIsNicknameLoading(true);
+      const result = await fetchNickname(userId);
+      if (cancelled) return;
+      setNickname(result);
+      setIsNicknameLoading(false);
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [session?.user?.id]);
 
   const signUp: AuthContextValue['signUp'] = async (email, password) => {
     const { data, error } = await supabase.auth.signUp({ email, password });
@@ -81,13 +119,30 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await supabase.auth.signOut();
   };
 
+  const updateNickname: AuthContextValue['updateNickname'] = async (
+    nextNickname,
+  ) => {
+    const userId = session?.user?.id;
+    if (!userId) {
+      return { error: '로그인이 필요합니다.' };
+    }
+    const { error } = await updateNicknameRequest(userId, nextNickname);
+    if (!error) {
+      setNickname(nextNickname);
+    }
+    return { error };
+  };
+
   const value: AuthContextValue = {
     user: session?.user ?? null,
     session,
     isLoading,
+    nickname,
+    isNicknameLoading,
     signUp,
     signIn,
     signOut,
+    updateNickname,
   };
 
   return (
