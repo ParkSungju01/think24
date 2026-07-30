@@ -27,7 +27,7 @@ export function SideNav() {
       />
       <NavItem
         to={ROUTES.mypage}
-        label="마이페이지"
+        label="프로필"
         icon={<img src={myPageIcon} alt="" className="h-5.75 w-5.75" />}
       />
     </nav>

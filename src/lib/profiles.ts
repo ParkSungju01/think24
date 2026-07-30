@@ -30,3 +30,16 @@ export async function fetchNickname(userId: string): Promise<string | null> {
 
   return data.nickname;
 }
+
+/** 마이페이지("프로필 수정")에서 닉네임을 변경할 때 profiles 테이블을 업데이트한다.
+ * createProfile/fetchNickname과 동일하게 기존 RLS 정책을 그대로 사용한다. */
+export async function updateNickname(
+  userId: string,
+  nickname: string,
+): Promise<{ error: string | null }> {
+  const { error } = await supabase
+    .from('profiles')
+    .update({ nickname })
+    .eq('id', userId);
+  return { error: error?.message ?? null };
+}

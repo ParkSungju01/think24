@@ -8,25 +8,13 @@ import { useAuth } from '../../contexts/AuthContext';
 import { createProfile } from '../../lib/profiles';
 import { markSignupJustCompleted } from '../../lib/signupFlag';
 import { ROUTES } from '../../routes/paths';
+import { getNicknameError } from '../../utils/nicknameValidation';
 import {
   getPasswordError,
   isPasswordStrongEnough,
 } from '../../utils/passwordValidation';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const NICKNAME_REGEX = /^[가-힣a-zA-Z0-9]{2,10}$/;
-// 금칙어 필터는 mock 수준의 예시 목록이다 (욕설/운영자 사칭 등, 명세 2-1)
-const BANNED_NICKNAME_WORDS = [
-  '관리자',
-  '운영자',
-  'admin',
-  'administrator',
-  '시발',
-  '씨발',
-  '병신',
-  '좆같',
-  '존나',
-];
 
 export function SignUpPage() {
   const { signUp } = useAuth();
@@ -58,19 +46,7 @@ export function SignUpPage() {
     );
   };
 
-  const nicknameError = (() => {
-    if (nickname.length === 0) return null;
-    if (!NICKNAME_REGEX.test(nickname)) {
-      return '2~10자의 한글/영문/숫자만 사용할 수 있습니다.';
-    }
-    const lower = nickname.toLowerCase();
-    if (
-      BANNED_NICKNAME_WORDS.some((word) => lower.includes(word.toLowerCase()))
-    ) {
-      return '사용할 수 없는 닉네임입니다.';
-    }
-    return null;
-  })();
+  const nicknameError = getNicknameError(nickname);
 
   const passwordError = getPasswordError(password, email);
   const confirmMismatch =

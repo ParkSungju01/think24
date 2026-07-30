@@ -44,7 +44,7 @@ export function BottomNav() {
       <div className="flex flex-1 justify-center">
         <BottomNavItem
           to={ROUTES.mypage}
-          label="마이페이지"
+          label="프로필"
           icon={<img src={myPageIcon} alt="" className="h-7.5 w-7.5" />}
         />
       </div>

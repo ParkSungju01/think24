@@ -18,11 +18,11 @@ export function BrandPanel() {
         </div>
 
         <div className="flex flex-col gap-8">
-          <p className="text-[30px] leading-[42px] font-bold text-[#1f2420]">
+          <p className="text-[30px] leading-10.5 font-bold text-[#1f2420]">
             잠시 멈추면
             <br />더 좋은 선택이 보입니다.
           </p>
-          <p className="text-[15px] leading-[24px] text-[#899086]">
+          <p className="text-[15px] leading-6 text-[#899086]">
             구매 전 잠깐의 멈춤이
             <br />
             당신의 절약 습관을 만들어 갑니다.
