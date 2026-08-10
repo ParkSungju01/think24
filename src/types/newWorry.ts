@@ -2,13 +2,19 @@
 // 공유하는 타입. Edge Function 입출력, useNewWorryFlow 상태, worries insert payload가
 // 모두 이 타입들을 함께 사용한다.
 
-/** AI가 생성한 질문 1개. reason은 "AI가 이 질문을 하는 이유" 토글에 노출한다. */
+/**
+ * AI가 생성한 질문 1개. reason은 "AI가 이 질문을 하는 이유" 토글에 노출한다.
+ * options는 이 질문에 맞춰 AI가 함께 생성한 3지선다 답변 문구(고정 상수가 아니라 질문마다
+ * 다르다 — 실배포 후 고정 선택지가 질문과 안 맞는 경우가 많다는 피드백으로 추가됨).
+ */
 export interface AiQuestion {
   question: string;
   reason: string;
+  options: string[];
 }
 
-/** 질문 스텝에서 사용자가 고른 답변. answer는 고정 3지선다 문구 중 하나 그대로 저장한다. */
+/** 질문 스텝에서 사용자가 고른 답변. answer는 해당 질문의 options 중 사용자가 고른 문구
+ * 그대로 저장한다. */
 export interface AiAnswer {
   question: string;
   answer: string;
@@ -41,7 +47,12 @@ export interface ProductInfoInput {
   imageFile: File | null;
 }
 
-/** 계획서 확인 완료 4번: 질문마다 고정된 3지선다 옵션(순서 고정) */
+/**
+ * 폴백 전용 3지선다 옵션. 원래는 모든 질문에 고정으로 쓰던 옵션이었지만, 실배포 후 AI가
+ * 생성한 질문과 안 맞는 경우가 많다는 피드백으로 이제는 AiQuestion.options(질문마다 AI가
+ * 직접 생성)를 우선 사용한다. 이 상수는 AI가 options를 3개 채우지 못했을 때만
+ * (ai-generate-questions Edge Function의 normalizeOptions와) QuestionStep의 방어 코드에서 쓰인다.
+ */
 export const QUESTION_ANSWER_OPTIONS = [
   '네, 꼭 필요해요.',
   '있으면 좋을 거 같아요.',

@@ -16,10 +16,15 @@ interface RequestBody {
 interface AiQuestion {
   question: string;
   reason: string;
+  options: string[];
 }
 
 const OPENAI_MODEL = 'gpt-4o-mini';
 const QUESTION_COUNT = 5;
+const OPTION_COUNT = 3;
+// AI가 그 질문에 어울리는 선택지를 3개 못 채워준 경우를 대비한 방어용 기본값
+// (프론트엔드 src/types/newWorry.ts의 QUESTION_ANSWER_OPTIONS와 동일한 문구로 맞춰둔다).
+const FALLBACK_OPTIONS = ['네, 꼭 필요해요.', '있으면 좋을 거 같아요.', '잘 모르겠어요.'];
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -87,8 +92,13 @@ async function generateQuestions(
 스스로 판단해볼 수 있도록 도와주는 질문을 정확히 ${QUESTION_COUNT}개 만들어주세요.
 각 질문은 한국어로, 사용자에게 직접 묻는 존댓말 문장으로 작성하고(예: "이 물건이 정말 필요한
 이유가 있나요?"), 질문마다 "이 질문을 왜 하는지"에 대한 짧은 이유(reason)를 함께 작성해주세요.
-질문에는 이미 "네, 꼭 필요해요." / "있으면 좋을 거 같아요." / "잘 모르겠어요." 세 가지
-선택지로 답하게 될 것이므로, 이 세 선택지 중 하나로 자연스럽게 답할 수 있는 질문이어야 합니다.`;
+
+그리고 각 질문마다 그 질문에 자연스럽게 어울리는 답변 선택지를 정확히 ${OPTION_COUNT}개
+(options)씩 함께 생성해주세요. 선택지는 고정된 문구를 재사용하지 말고 질문 내용에 맞게
+자유롭게 작성하되, 사용자의 필요/충동 정도를 판단할 수 있도록 설계해야 합니다 — 예를 들어
+"강하게 필요하다는 뉘앙스" / "있으면 좋지만 없어도 그만인 중간 뉘앙스" / "잘 모르겠다는
+모호한 뉘앙스"처럼 서로 다른 3단계 톤을 담아주세요. 각 선택지는 한 문장의 존댓말로 작성하고,
+사용자가 클릭 한 번으로 고를 수 있는 짧은 문구여야 합니다.`;
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -121,8 +131,12 @@ async function generateQuestions(
                   properties: {
                     question: { type: 'string' },
                     reason: { type: 'string' },
+                    options: {
+                      type: 'array',
+                      items: { type: 'string' },
+                    },
                   },
-                  required: ['question', 'reason'],
+                  required: ['question', 'reason', 'options'],
                   additionalProperties: false,
                 },
               },
@@ -151,5 +165,26 @@ async function generateQuestions(
     throw new Error('OpenAI가 질문을 충분히 생성하지 못했습니다.');
   }
 
-  return parsed.questions.slice(0, QUESTION_COUNT);
+  return parsed.questions.slice(0, QUESTION_COUNT).map((q) => ({
+    ...q,
+    options: normalizeOptions(q.options),
+  }));
+}
+
+/** AI가 선택지를 OPTION_COUNT개보다 적게/많이 주거나 비워서 준 경우를 방어한다.
+ * 부족한 자리는 고정 문구(FALLBACK_OPTIONS)로 채워 프론트엔드가 항상 3개를 받도록 보장한다. */
+function normalizeOptions(options: unknown): string[] {
+  const valid = Array.isArray(options)
+    ? options.filter((option): option is string => typeof option === 'string' && option.length > 0)
+    : [];
+
+  if (valid.length >= OPTION_COUNT) {
+    return valid.slice(0, OPTION_COUNT);
+  }
+
+  const padded = [...valid];
+  for (let i = valid.length; i < OPTION_COUNT; i++) {
+    padded.push(FALLBACK_OPTIONS[i] ?? FALLBACK_OPTIONS[FALLBACK_OPTIONS.length - 1]);
+  }
+  return padded;
 }

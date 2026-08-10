@@ -1,7 +1,21 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ChevronLeft, Circle, CircleCheck, Lightbulb } from 'lucide-react';
 import { QUESTION_ANSWER_OPTIONS } from '../../../types/newWorry';
 import type { AiQuestion } from '../../../types/newWorry';
+
+const OPTION_COUNT = 3;
+
+/** ai-generate-questions가 이미 3개를 채워 보내지만(normalizeOptions), 배포 전 캐시된
+ * 응답이나 예상 밖의 응답을 대비해 프론트에도 동일한 방어 로직을 한 번 더 둔다 — options가
+ * 비었거나 부족하면 질문마다 다른 문구 대신 고정 3지선다(QUESTION_ANSWER_OPTIONS)로 대체한다. */
+function resolveOptions(question: AiQuestion): string[] {
+  const valid = (question.options ?? []).filter(
+    (option) => typeof option === 'string' && option.length > 0,
+  );
+  return valid.length >= OPTION_COUNT
+    ? valid.slice(0, OPTION_COUNT)
+    : [...QUESTION_ANSWER_OPTIONS];
+}
 
 interface QuestionStepProps {
   question: AiQuestion;
@@ -28,6 +42,7 @@ export function QuestionStep({
   onPrevious,
 }: QuestionStepProps) {
   const [isReasonOpen, setIsReasonOpen] = useState(false);
+  const options = useMemo(() => resolveOptions(question), [question]);
 
   return (
     <div className="mx-auto flex w-full max-w-105 flex-col px-6 pt-10 pb-24 lg:pt-14 xl:max-w-160 xl:pt-20">
@@ -54,7 +69,7 @@ export function QuestionStep({
       )}
 
       <div className="mt-8 flex flex-col gap-3 xl:mt-10 xl:gap-4">
-        {QUESTION_ANSWER_OPTIONS.map((option) => {
+        {options.map((option) => {
           const isSelected = selectedAnswer === option;
           return (
             <button
