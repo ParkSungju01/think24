@@ -18,8 +18,14 @@ type ModalState = { type: 'deleteAll' } | { type: 'deleteOne'; id: string } | nu
  */
 export function NotificationsPage() {
   const navigate = useNavigate();
-  const { notifications, markAsRead, markAllAsRead, deleteNotification, deleteAll } =
-    useNotifications();
+  const {
+    notifications,
+    isLoading,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    deleteAll,
+  } = useNotifications();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
@@ -112,7 +118,13 @@ export function NotificationsPage() {
         )}
       </NotificationsHeader>
 
-      {notifications.length === 0 ? (
+      {isLoading ? (
+        // 이슈 #31: 실데이터 최초 조회 중에는 "아직 알림이 없어요" 빈 상태를 잠깐 보여주지
+        // 않는다. 피그마에 정의되지 않은 전환 상태라 별도 스펙 없이 간단한 안내 문구만 표시.
+        <div className="flex flex-1 items-center justify-center text-[13px] text-[#666]">
+          불러오는 중...
+        </div>
+      ) : notifications.length === 0 ? (
         <NotificationEmptyState />
       ) : (
         <ul>
