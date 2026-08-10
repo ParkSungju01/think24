@@ -42,9 +42,14 @@ export async function generateWorryQuestions(
   });
 
   if (error || !data?.questions) {
+    // error.message는 supabase-js가 만드는 영문 기술 메시지(예: "Failed to send a
+    // request to the Edge Function")라 사용자 토스트에 그대로 노출하지 않는다.
+    // 우리 Edge Function이 직접 내려준 data.error(한국어)만 신뢰하고, 그 외에는
+    // 콘솔에 원인을 남긴 뒤 고정 한국어 메시지로 대체한다.
+    if (error) console.error('generateWorryQuestions 실패:', error);
     return {
       questions: null,
-      error: data?.error ?? error?.message ?? 'AI 질문 생성에 실패했습니다.',
+      error: data?.error ?? 'AI 질문 생성에 실패했습니다.',
     };
   }
 
@@ -70,9 +75,10 @@ export async function generateWorryVerdict(
   });
 
   if (error || !data?.verdict || !data.scores) {
+    if (error) console.error('generateWorryVerdict 실패:', error);
     return {
       verdict: null,
-      error: data?.error ?? error?.message ?? 'AI 분석에 실패했습니다.',
+      error: data?.error ?? 'AI 분석에 실패했습니다.',
     };
   }
 

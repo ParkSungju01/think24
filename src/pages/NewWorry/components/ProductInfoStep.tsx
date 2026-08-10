@@ -84,7 +84,7 @@ export function ProductInfoStep({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="relative flex aspect-[325/611] w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[14px] bg-[#efefef]"
+            className="relative flex aspect-325/611 w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[14px] bg-[#efefef]"
           >
             {previewUrl ? (
               <img
