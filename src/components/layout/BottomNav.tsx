@@ -29,23 +29,29 @@ export function BottomNav() {
           to={ROUTES.records}
           label="소비 기록"
           icon={<img src={reportIcon} alt="" className="h-7.5 w-7.5" />}
+          end
         />
       </div>
       <div className="flex flex-1 justify-center">
         <NewWorryFab />
       </div>
+      {/* 버그 수정(SideNav와 동일 원인): /worries가 /worries/new의 접두 경로라서 end 없이는
+          "새 고민 생성" 화면(FAB로 진입)에서도 "고민 목록"이 함께 active로 매칭됐다.
+          나머지 항목도 향후 하위 경로가 생겨도 안전하도록 전부 end를 붙여 일관되게 맞췄다. */}
       <div className="flex flex-1 justify-center">
         <BottomNavItem
           to={ROUTES.worries}
           label="고민 목록"
           icon={<img src={listIcon} alt="" className="h-7.5 w-7.5" />}
+          end
         />
       </div>
       <div className="flex flex-1 justify-center">
         <BottomNavItem
           to={ROUTES.mypage}
-          label="마이페이지"
+          label="프로필"
           icon={<img src={myPageIcon} alt="" className="h-7.5 w-7.5" />}
+          end
         />
       </div>
     </nav>

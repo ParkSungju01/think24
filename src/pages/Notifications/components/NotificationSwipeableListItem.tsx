@@ -1,6 +1,7 @@
 import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react';
 import { Trash2 } from 'lucide-react';
 import type { NotificationItem } from '../../../types/notifications';
+import { formatRelativeTime } from '../../../utils/format';
 
 interface NotificationSwipeableListItemProps {
   notification: NotificationItem;
@@ -163,7 +164,7 @@ export function NotificationSwipeableListItem({
               '{worryName}'
             </p>
             <span className="shrink-0 whitespace-nowrap text-[9px] font-medium text-[#666]">
-              {createdAt}
+              {formatRelativeTime(createdAt)}
             </span>
           </div>
           <p className="text-[9px] font-medium text-[#666]">{message}</p>

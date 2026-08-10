@@ -9,9 +9,28 @@ export const homeMock: HomeData = {
   savedAmountAbandonedCount: 0,
   savedAmountPurchasedCount: 0,
   // 사용자 요청: 진행 중인 고민 데이터가 아직 없어 빈 배열로 표시 (OngoingWorriesCard의 빈 상태 UI 확인용)
+  // createdAt/deadlineAt은 이 더미 데이터가 실제로 화면에 쓰이지 않아(아래 주석 참고)
+  // 정확한 진행률 재현보다는 타입만 맞추는 용도 — remainingSeconds/progressPercent와
+  // 완전히 일치하지 않아도 무방하다.
   ongoingWorries: [
-    {id: "1", name:"피켓", price:1000, remainingSeconds: 10020, progressPercent:70},
-    {id: "2", name:"피켓", price:1000, remainingSeconds: 20, progressPercent:90}
+    {
+      id: '1',
+      name: '피켓',
+      price: 1000,
+      remainingSeconds: 10020,
+      progressPercent: 70,
+      createdAt: new Date(Date.now() - 23_380 * 1000),
+      deadlineAt: new Date(Date.now() + 10_020 * 1000),
+    },
+    {
+      id: '2',
+      name: '피켓',
+      price: 1000,
+      remainingSeconds: 20,
+      progressPercent: 90,
+      createdAt: new Date(Date.now() - 180 * 1000),
+      deadlineAt: new Date(Date.now() + 20 * 1000),
+    },
   ],
   // selectedMonth는 더 이상 여기 없음: "현재 월"은 목데이터가 아니라 실제 값이어야 하므로
   // HomePage에서 getCurrentMonthLabel()로 런타임 계산해 내려준다 (src/pages/Home/index.tsx 참고)

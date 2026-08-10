@@ -100,6 +100,8 @@ export function computeOngoingWorries(
         thumbnailUrl: worry.thumbnailUrl ?? undefined,
         remainingSeconds,
         progressPercent,
+        createdAt: worry.createdAt,
+        deadlineAt: worry.deadlineAt,
       };
     })
     .sort((a, b) => a.remainingSeconds - b.remainingSeconds)
