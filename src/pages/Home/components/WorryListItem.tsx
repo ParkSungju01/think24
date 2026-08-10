@@ -1,6 +1,7 @@
 import { Clock, Clock2 } from "lucide-react";
 import type { OngoingWorry } from "../../../types/home";
 import { formatRemainingTime, formatWon } from "../../../utils/format";
+import { useCountdown } from "../../../hooks/useCountdown";
 
 const TIMER_EXTEND_THRESHOLD_SECONDS = 3600;
 
@@ -9,8 +10,18 @@ interface WorryListItemProps {
 }
 
 export function WorryListItem({ worry }: WorryListItemProps) {
-  const canExtendTimer =
-    worry.remainingSeconds <= TIMER_EXTEND_THRESHOLD_SECONDS;
+  // 실사용 피드백: 새로고침해야만 타이머가 줄어들던 문제 수정 — useHomeData가 조회 시점에
+  // 한 번만 계산해준 worry.remainingSeconds/progressPercent 대신, 이미 로그인/카운트다운
+  // 잠금 화면 등에서 검증된 useCountdown(1초 간격 tick, 언마운트 시 clearInterval)으로
+  // deadlineAt 기준 잔여 시간을 매초 다시 계산한다. progressPercent는 그 잔여 시간과
+  // (deadlineAt - createdAt) 총 구간으로부터 파생한다.
+  const remainingSeconds = useCountdown(worry.deadlineAt.getTime());
+  const totalMs = worry.deadlineAt.getTime() - worry.createdAt.getTime();
+  const elapsedMs = totalMs - remainingSeconds * 1000;
+  const progressPercent =
+    totalMs > 0 ? Math.min(100, Math.max(0, (elapsedMs / totalMs) * 100)) : 100;
+
+  const canExtendTimer = remainingSeconds <= TIMER_EXTEND_THRESHOLD_SECONDS;
 
   return (
     // 확인 완료: "카드 안 카드" 스타일(흰 배경+둥근 모서리+그림자)은 xl(1024px)부터 제거, 데스크톱은 기존 단순 행 구조 유지
@@ -50,7 +61,7 @@ export function WorryListItem({ worry }: WorryListItemProps) {
             <div className="flex min-w-0 items-center gap-1 text-[10px] text-[#a9d592] xl:text-[13px]">
               <Clock className="h-3.5 w-3.5 shrink-0" />
               <span className="truncate">
-                {formatRemainingTime(worry.remainingSeconds)} 남음
+                {formatRemainingTime(remainingSeconds)} 남음
               </span>
             </div>
           </div>
@@ -68,7 +79,7 @@ export function WorryListItem({ worry }: WorryListItemProps) {
         <div className="h-2.5 w-full rounded-[7px] mt-1 bg-[#f5f5f5] xl:h-1.75">
           <div
             className="h-2.5 rounded-[7px] bg-[#7ccf8a] xl:h-1.75"
-            style={{ width: `${worry.progressPercent}%` }}
+            style={{ width: `${progressPercent}%` }}
           />
         </div>
       </div>
