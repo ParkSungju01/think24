@@ -20,7 +20,7 @@ export function NotificationBell({ variant = 'dropdown' }: NotificationBellProps
   const [isOpen, setIsOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
-  const { notifications, hasUnread, markAsRead } = useNotifications();
+  const { notifications, isLoading, hasUnread, markAsRead } = useNotifications();
 
   // 확인 완료: 별도 페이지(/notifications)로 이동하는 대신, 벨을 클릭하면 바로 아래에
   // 드롭다운 패널이 펼쳐진다(피그마 웹 목업 원본 형태). 바깥 영역을 클릭하면 닫힌다.
@@ -71,6 +71,7 @@ export function NotificationBell({ variant = 'dropdown' }: NotificationBellProps
         <div className="absolute right-0 top-full z-50 mt-2 w-91.75 max-w-[calc(100vw-1.5rem)]">
           <NotificationsPanel
             notifications={notifications}
+            isLoading={isLoading}
             onItemClick={markAsRead}
           />
         </div>
