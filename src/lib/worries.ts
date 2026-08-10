@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import type { AiAnswer, AiQuestion, AiVerdict } from '../types/newWorry';
 
 export type WorryStatus = 'ongoing' | 'abandoned' | 'purchased';
 
@@ -63,4 +64,55 @@ export async function fetchRecentWorries(
   }
 
   return (data ?? []).map(toWorryRecord);
+}
+
+// 이슈 #29(새 고민 생성): docs/plans/new-worry.md "src/lib 신규/변경 모듈 제안" 그대로.
+export interface CreateWorryInput {
+  userId: string;
+  name: string;
+  price: number;
+  category: string;
+  purchaseUrl: string | null;
+  thumbnailUrl: string | null;
+  aiQuestions: AiQuestion[];
+  aiAnswers: AiAnswer[];
+  aiVerdict: AiVerdict;
+}
+
+const TWENTY_FOUR_HOURS_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * "24시간 고민 시작하기" 클릭 시 딱 한 번 호출되는 insert. deadline_at은 여기서
+ * `now + 24h`로 계산한다(docs/plans/backend-setup.md 확인 완료 사항 그대로, 이번이 첫 사용처).
+ */
+export async function createWorry(
+  input: CreateWorryInput,
+): Promise<{ data: WorryRecord | null; error: string | null }> {
+  const deadlineAt = new Date(Date.now() + TWENTY_FOUR_HOURS_MS);
+
+  const { data, error } = await supabase
+    .from('worries')
+    .insert({
+      user_id: input.userId,
+      name: input.name,
+      price: input.price,
+      category: input.category,
+      purchase_url: input.purchaseUrl,
+      thumbnail_url: input.thumbnailUrl,
+      status: 'ongoing',
+      deadline_at: deadlineAt.toISOString(),
+      ai_questions: input.aiQuestions,
+      ai_answers: input.aiAnswers,
+      ai_verdict: input.aiVerdict,
+    })
+    .select(
+      'id, name, price, thumbnail_url, status, created_at, decided_at, deadline_at',
+    )
+    .single();
+
+  if (error || !data) {
+    return { data: null, error: error?.message ?? 'insert 실패' };
+  }
+
+  return { data: toWorryRecord(data), error: null };
 }

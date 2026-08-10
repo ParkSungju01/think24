@@ -52,14 +52,14 @@ export function LogoutConfirmModal({
           <button
             type="button"
             onClick={onConfirm}
-            className="h-12.75 w-46.5 rounded-[6px] border border-[#d9d9d9] bg-white text-[28px] font-medium text-[#666]"
+            className="h-12.75 w-46.5 rounded-md border border-[#d9d9d9] bg-white text-[28px] font-medium text-[#666]"
           >
             네
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="h-12.75 w-46.5 rounded-[6px] bg-[#729e59] text-[28px] font-medium text-white"
+            className="h-12.75 w-46.5 rounded-md bg-[#729e59] text-[28px] font-medium text-white"
           >
             아니요
           </button>
