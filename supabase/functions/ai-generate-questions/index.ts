@@ -13,18 +13,39 @@ interface RequestBody {
   purchaseUrl?: string;
 }
 
+// 프론트엔드로 내려가는 최종 형태 — sentiment는 이 함수 내부에서만 쓰고 응답에는 포함하지
+// 않는다(프론트 타입/렌더링을 그대로 유지하기 위한 설계 선택. 아래 generateQuestions 주석 참고).
 interface AiQuestion {
   question: string;
   reason: string;
   options: string[];
 }
 
+type Sentiment = 'yes' | 'no' | 'unsure';
+
+/** OpenAI가 만드는 원본 선택지 1개 — sentiment로 의미 범주를 강제한다. */
+interface RawOption {
+  sentiment?: unknown;
+  text?: unknown;
+}
+
+interface RawQuestion {
+  question: string;
+  reason: string;
+  options: RawOption[];
+}
+
 const OPENAI_MODEL = 'gpt-4o-mini';
 const QUESTION_COUNT = 5;
-const OPTION_COUNT = 3;
-// AI가 그 질문에 어울리는 선택지를 3개 못 채워준 경우를 대비한 방어용 기본값
-// (프론트엔드 src/types/newWorry.ts의 QUESTION_ANSWER_OPTIONS와 동일한 문구로 맞춰둔다).
-const FALLBACK_OPTIONS = ['네, 꼭 필요해요.', '있으면 좋을 거 같아요.', '잘 모르겠어요.'];
+// 선택지는 항상 yes/no/unsure 3개, 이 순서로 고정 노출한다.
+const SENTIMENT_ORDER: Sentiment[] = ['yes', 'no', 'unsure'];
+// AI가 특정 sentiment 선택지를 안 주거나 형식이 깨졌을 때의 방어용 기본값
+// (프론트엔드 src/types/newWorry.ts의 QUESTION_ANSWER_OPTIONS와 동일한 톤으로 맞춰둔다).
+const FALLBACK_TEXT_BY_SENTIMENT: Record<Sentiment, string> = {
+  yes: '네, 꼭 필요해요.',
+  no: '아니요, 필요 없어요.',
+  unsure: '잘 모르겠어요.',
+};
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
@@ -93,12 +114,17 @@ async function generateQuestions(
 각 질문은 한국어로, 사용자에게 직접 묻는 존댓말 문장으로 작성하고(예: "이 물건이 정말 필요한
 이유가 있나요?"), 질문마다 "이 질문을 왜 하는지"에 대한 짧은 이유(reason)를 함께 작성해주세요.
 
-그리고 각 질문마다 그 질문에 자연스럽게 어울리는 답변 선택지를 정확히 ${OPTION_COUNT}개
-(options)씩 함께 생성해주세요. 선택지는 고정된 문구를 재사용하지 말고 질문 내용에 맞게
-자유롭게 작성하되, 사용자의 필요/충동 정도를 판단할 수 있도록 설계해야 합니다 — 예를 들어
-"강하게 필요하다는 뉘앙스" / "있으면 좋지만 없어도 그만인 중간 뉘앙스" / "잘 모르겠다는
-모호한 뉘앙스"처럼 서로 다른 3단계 톤을 담아주세요. 각 선택지는 한 문장의 존댓말로 작성하고,
-사용자가 클릭 한 번으로 고를 수 있는 짧은 문구여야 합니다.`;
+그리고 각 질문마다 답변 선택지를 정확히 3개(options) 생성해주세요. 3개는 각각 아래 세
+의미 범주(sentiment)에 정확히 하나씩만 대응해야 하고, 절대 두 범주에 걸치듯 애매하게
+쓰면 안 됩니다:
+- "yes": 그 질문에 명확히 긍정/필요하다는 뜻으로 답하는 선택지
+- "no": 그 질문에 명확히 부정/불필요하다는 뜻으로 답하는 선택지
+- "unsure": 아직 판단이 서지 않는다는 불확실한 뜻의 선택지
+
+각 선택지의 문구(text)는 질문 내용에 자연스럽게 어울리는 한국어 존댓말로 작성하되, 반드시
+15자 내외의 짧고 간결한 문장으로 작성해주세요(예: "네, 자주 사용해요." 같은 톤 — "~것
+같습니다" 같은 장황한 설명형 문장은 피해주세요). 고정된 문구를 재사용하지 말고 질문마다
+새로 작성하고, 사용자가 클릭 한 번으로 고를 수 있는 짧은 문구여야 합니다.`;
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
@@ -133,7 +159,18 @@ async function generateQuestions(
                     reason: { type: 'string' },
                     options: {
                       type: 'array',
-                      items: { type: 'string' },
+                      items: {
+                        type: 'object',
+                        properties: {
+                          sentiment: {
+                            type: 'string',
+                            enum: ['yes', 'no', 'unsure'],
+                          },
+                          text: { type: 'string' },
+                        },
+                        required: ['sentiment', 'text'],
+                        additionalProperties: false,
+                      },
                     },
                   },
                   required: ['question', 'reason', 'options'],
@@ -160,31 +197,48 @@ async function generateQuestions(
     throw new Error('OpenAI 응답에 content가 없습니다.');
   }
 
-  const parsed = JSON.parse(content) as { questions: AiQuestion[] };
+  const parsed = JSON.parse(content) as { questions: RawQuestion[] };
   if (!Array.isArray(parsed.questions) || parsed.questions.length < QUESTION_COUNT) {
     throw new Error('OpenAI가 질문을 충분히 생성하지 못했습니다.');
   }
 
+  // sentiment는 yes/no/unsure 범주를 강제하기 위한 내부용 필드일 뿐, 프론트엔드
+  // AiQuestion 타입(options: string[])은 이번 변경 전과 동일하게 유지한다 — sentiment별
+  // 순서(yes, no, unsure)로 정렬한 문구 배열만 최종 응답에 담는다.
   return parsed.questions.slice(0, QUESTION_COUNT).map((q) => ({
-    ...q,
+    question: q.question,
+    reason: q.reason,
     options: normalizeOptions(q.options),
   }));
 }
 
-/** AI가 선택지를 OPTION_COUNT개보다 적게/많이 주거나 비워서 준 경우를 방어한다.
- * 부족한 자리는 고정 문구(FALLBACK_OPTIONS)로 채워 프론트엔드가 항상 3개를 받도록 보장한다. */
+/**
+ * AI가 만든 선택지 배열에서 sentiment(yes/no/unsure)별로 정확히 하나씩만 골라
+ * SENTIMENT_ORDER 순서(yes, no, unsure)로 정렬한 문구 배열을 반환한다. 특정 sentiment가
+ * 없거나, sentiment 값이 셋 중 하나가 아니거나, text가 비어있는 등 형식이 깨진 항목은
+ * 무시하고 FALLBACK_TEXT_BY_SENTIMENT로 채워 항상 3개가 채워지도록 보장한다.
+ */
 function normalizeOptions(options: unknown): string[] {
-  const valid = Array.isArray(options)
-    ? options.filter((option): option is string => typeof option === 'string' && option.length > 0)
-    : [];
+  const rawList = Array.isArray(options) ? (options as RawOption[]) : [];
 
-  if (valid.length >= OPTION_COUNT) {
-    return valid.slice(0, OPTION_COUNT);
+  const bySentiment = new Map<Sentiment, string>();
+  for (const option of rawList) {
+    const sentiment = option?.sentiment;
+    const text = option?.text;
+    const isValidSentiment =
+      sentiment === 'yes' || sentiment === 'no' || sentiment === 'unsure';
+
+    if (
+      isValidSentiment &&
+      typeof text === 'string' &&
+      text.length > 0 &&
+      !bySentiment.has(sentiment)
+    ) {
+      bySentiment.set(sentiment, text);
+    }
   }
 
-  const padded = [...valid];
-  for (let i = valid.length; i < OPTION_COUNT; i++) {
-    padded.push(FALLBACK_OPTIONS[i] ?? FALLBACK_OPTIONS[FALLBACK_OPTIONS.length - 1]);
-  }
-  return padded;
+  return SENTIMENT_ORDER.map(
+    (sentiment) => bySentiment.get(sentiment) ?? FALLBACK_TEXT_BY_SENTIMENT[sentiment],
+  );
 }

@@ -52,10 +52,12 @@ export interface ProductInfoInput {
  * 생성한 질문과 안 맞는 경우가 많다는 피드백으로 이제는 AiQuestion.options(질문마다 AI가
  * 직접 생성)를 우선 사용한다. 이 상수는 AI가 options를 3개 채우지 못했을 때만
  * (ai-generate-questions Edge Function의 normalizeOptions와) QuestionStep의 방어 코드에서 쓰인다.
+ * Edge Function이 이제 각 선택지를 yes/no/unsure 세 범주에 정확히 대응시키므로, 폴백
+ * 문구도 같은 톤(명확한 긍정/부정/불확실)으로 맞췄다.
  */
 export const QUESTION_ANSWER_OPTIONS = [
   '네, 꼭 필요해요.',
-  '있으면 좋을 거 같아요.',
+  '아니요, 필요 없어요.',
   '잘 모르겠어요.',
 ] as const;
 
