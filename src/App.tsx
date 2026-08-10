@@ -6,6 +6,7 @@ import { NotificationsProvider } from './contexts/NotificationsContext';
 import { HomePage } from './pages/Home';
 import { LoginPage } from './pages/Login';
 import { MyPage } from './pages/MyPage';
+import { NewWorryPage } from './pages/NewWorry';
 import { NotificationsPage } from './pages/Notifications';
 import { SignUpPage } from './pages/SignUp';
 import { SignupCompletePage } from './pages/SignupComplete';
@@ -24,6 +25,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
               <Route path={ROUTES.home} element={<HomePage />} />
+              <Route path={ROUTES.newWorry} element={<NewWorryPage />} />
               <Route path={ROUTES.mypage} element={<MyPage />} />
             </Route>
             {/* 이슈 #17 확인 완료: /notifications는 AppLayout(MobileTopBar/BottomNav/Sidebar)
