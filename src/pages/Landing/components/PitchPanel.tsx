@@ -55,8 +55,13 @@ export function PitchPanel({ className = '' }: PitchPanelProps) {
     // items-center를 쓰는데, 그 상태 그대로면 이 패널도 콘텐츠 높이만큼만 차지해 화면보다 길어질 때
     // 페이지 전체가 스크롤되며 PhoneFrame까지 함께 밀려버린다. self-stretch로 이 패널만 부모 높이를
     // 꽉 채우게 하고, 넘치는 콘텐츠는 이 패널 내부에서만 스크롤되게 해 PhoneFrame은 항상 제자리에 고정한다.
+    // 사용자 요청: PhoneFrame(844px) 기준 xl 가용 높이 안에 스크롤 없이 전부 보이도록 섹션 간
+    // 여백을 압축했다. gap-5가 flex 컨테이너 차원에서 섹션 사이 간격을 이미 담당하므로(이전엔
+    // 각 섹션에 중복으로 mt-8도 붙어 있어 섹션 사이가 실제로는 gap+margin이 두 번 겹쳐 64px씩
+    // 벌어져 있었다 — 그 중복 마진을 걷어낸 게 가장 큰 절감분), 개별 섹션에는 더 이상 mt- 클래스를
+    // 쓰지 않는다. xl:overflow-y-auto는 폰트 크기 등 외부 요인으로 다시 넘칠 때를 대비한 안전망으로 남겨둔다.
     <div
-      className={`w-full max-w-125 flex-col gap-8 py-10 xl:self-stretch xl:overflow-y-auto ${className}`}
+      className={`w-full max-w-125 flex-col gap-4 py-4 xl:self-stretch xl:overflow-y-auto ${className}`}
     >
       <div className="flex items-center gap-2">
         <img src={logo} alt="" className="h-8 w-8" />
@@ -66,7 +71,7 @@ export function PitchPanel({ className = '' }: PitchPanelProps) {
         </span>
       </div>
 
-      <div className="mt-8 flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         <h1 className="text-[36px] leading-tight font-bold text-[#1f2420]">
           충동구매 앞에서,
           <br />
@@ -78,11 +83,11 @@ export function PitchPanel({ className = '' }: PitchPanelProps) {
         </p>
       </div>
 
-      <div className="mt-8 flex gap-4">
+      <div className="flex gap-4">
         {STATS.map((stat) => (
           <div
             key={stat.label}
-            className="flex flex-1 flex-col gap-1 rounded-2xl bg-white p-4"
+            className="flex flex-1 flex-col gap-1 rounded-2xl bg-white p-3"
           >
             <span className="text-[18px] font-bold text-[#3e9b48]">
               {stat.label}
@@ -94,13 +99,13 @@ export function PitchPanel({ className = '' }: PitchPanelProps) {
         ))}
       </div>
 
-      <div className="mt-8 flex flex-col gap-3">
+      <div className="flex flex-col gap-2">
         {FEATURES.map((feature) => (
           <FeatureCard key={feature.title} {...feature} />
         ))}
       </div>
 
-      <div className="mt-8 flex items-center gap-3 rounded-2xl bg-[#e9f6e4] p-4 text-[13px] font-medium text-[#3e9b48]">
+      <div className="flex items-center gap-3 rounded-2xl bg-[#e9f6e4] p-3 text-[13px] font-medium text-[#3e9b48]">
         <MousePointerClick className="h-5 w-5 shrink-0" aria-hidden="true" />
         오른쪽 화면을 직접 눌러보세요. 로그인부터 새 고민 등록까지 실제로
         동작하는 프로토타입입니다.
