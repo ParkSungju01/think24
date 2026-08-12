@@ -51,7 +51,13 @@ interface PitchPanelProps {
  */
 export function PitchPanel({ className = '' }: PitchPanelProps) {
   return (
-    <div className={`w-full max-w-125 flex-col gap-8 py-10 ${className}`}>
+    // xl:self-stretch + xl:overflow-y-auto: 부모(LandingLayout)가 PhoneFrame을 세로 중앙에 두려고
+    // items-center를 쓰는데, 그 상태 그대로면 이 패널도 콘텐츠 높이만큼만 차지해 화면보다 길어질 때
+    // 페이지 전체가 스크롤되며 PhoneFrame까지 함께 밀려버린다. self-stretch로 이 패널만 부모 높이를
+    // 꽉 채우게 하고, 넘치는 콘텐츠는 이 패널 내부에서만 스크롤되게 해 PhoneFrame은 항상 제자리에 고정한다.
+    <div
+      className={`w-full max-w-125 flex-col gap-8 py-10 xl:self-stretch xl:overflow-y-auto ${className}`}
+    >
       <div className="flex items-center gap-2">
         <img src={logo} alt="" className="h-8 w-8" />
         <span className="flex items-center gap-1 rounded-full bg-[#e9f6e4] px-3 py-1 text-[13px] font-medium text-[#3e9b48]">

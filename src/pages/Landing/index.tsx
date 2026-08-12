@@ -13,7 +13,10 @@ import { PitchPanel } from './components/PitchPanel';
  */
 export function LandingLayout() {
   return (
-    <div className="flex h-full w-full items-stretch justify-center bg-[#f4faef] xl:items-center xl:gap-16 xl:p-10">
+    // overflow-hidden: 이 컨테이너 자체(=문서/뷰포트)는 스크롤되지 않는다. PitchPanel 콘텐츠가
+    // 뷰포트보다 길어지면(좁은 세로 높이 등) PitchPanel 자신이 내부에서 스크롤되고(self-stretch +
+    // overflow-y-auto, PitchPanel.tsx 참고), PhoneFrame은 항상 같은 자리에 고정돼 보인다.
+    <div className="flex h-full w-full items-stretch justify-center overflow-hidden bg-[#f4faef] xl:items-center xl:gap-16 xl:p-10">
       <PitchPanel className="hidden xl:flex" />
       <PhoneFrame>
         <Outlet />
