@@ -25,7 +25,7 @@ export function ConfirmModal({ message, onConfirm, onCancel }: ConfirmModalProps
       onClick={onCancel}
     >
       <div
-        className="flex h-25 w-65 flex-col items-center justify-center gap-3 rounded-[6px] bg-white px-4"
+        className="flex h-25 w-65 flex-col items-center justify-center gap-3 rounded-md bg-white px-4"
         onClick={(event) => event.stopPropagation()}
       >
         <p className="text-center text-[15px] font-bold text-black">{message}</p>
@@ -33,14 +33,14 @@ export function ConfirmModal({ message, onConfirm, onCancel }: ConfirmModalProps
           <button
             type="button"
             onClick={onConfirm}
-            className="h-6 w-24.5 rounded-[6px] bg-[#eefff0] text-[14px] font-medium text-black"
+            className="h-6 w-24.5 rounded-md bg-[#eefff0] text-[14px] font-medium text-black"
           >
             네
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="h-6 w-24.5 rounded-[6px] bg-[#eefff0] text-[14px] font-medium text-black"
+            className="h-6 w-24.5 rounded-md bg-[#eefff0] text-[14px] font-medium text-black"
           >
             아니요
           </button>

@@ -24,7 +24,7 @@ export function SavedAmountCard({
       className="flex items-center justify-between rounded-[14px] border border-[rgba(188,230,193,0.55)] bg-white p-4 shadow-[1px_1px_3px_-1px_rgba(0,0,0,0.25)]"
     >
       <div className="flex flex-col gap-4">
-        <h2 className="text-[17px] font-medium text-black">
+        <h2 className="text-[17px] font-semibold text-black">
           지금까지 절약한 금액
         </h2>
         {/* flex-wrap과 배지 whitespace-nowrap은 폭이 좁아진 상태에서도 배지가 글자 단위로 쪼개지지
