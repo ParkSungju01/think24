@@ -8,7 +8,7 @@ export function ProtectedRoute() {
 
   if (isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
+      <div className="flex h-full items-center justify-center">
         <p className="text-sm text-[#666]">로딩 중...</p>
       </div>
     );

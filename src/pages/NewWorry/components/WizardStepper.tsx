@@ -26,7 +26,7 @@ export function WizardStepper({ step }: { step: NewWorryStep }) {
       {STEP_LABELS.map((label, index) => (
         <div key={label} className="flex items-center gap-2">
           <span
-            className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors lg:text-[15px] ${
+            className={`rounded-full px-4 py-1.5 text-[13px] font-semibold transition-colors ${
               index === activeIndex
                 ? 'bg-[#e9f6e4] text-[#3e9b48]'
                 : 'bg-[#f3f3f3] text-[#a9a9a9]'
@@ -35,7 +35,7 @@ export function WizardStepper({ step }: { step: NewWorryStep }) {
             {label}
           </span>
           {index < STEP_LABELS.length - 1 && (
-            <span className="h-px w-6 bg-[#dedede] lg:w-10" />
+            <span className="h-px w-6 bg-[#dedede]" />
           )}
         </div>
       ))}

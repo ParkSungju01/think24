@@ -19,13 +19,13 @@ const SCORE_ROWS: { key: keyof AiVerdict['scores']; label: string }[] = [
 function ScoreRow({ label, score }: { label: string; score: AiVerdictScore }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <div className="flex items-center justify-between text-[14px] xl:text-[19px]">
+      <div className="flex items-center justify-between text-[14px]">
         <span className="font-medium text-black">{label}</span>
         <span className="font-semibold text-[#3e9b48]">
           {score.percent}% · {score.label}
         </span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-[#eeeeee] xl:h-3">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-[#eeeeee]">
         <div
           className="h-full rounded-full bg-[#4fb75b]"
           style={{ width: `${Math.min(100, Math.max(0, score.percent))}%` }}
@@ -48,43 +48,39 @@ export function VerdictResultStep({
   const isNecessary = verdict.verdict === 'necessary';
 
   return (
-    <div className="mx-auto flex w-full max-w-105 flex-col items-center px-6 pt-10 pb-24 text-center lg:pt-14 xl:max-w-140 xl:pt-20">
+    <div className="mx-auto flex w-full max-w-105 flex-col items-center px-6 pt-10 pb-24 text-center">
       <img
         src={isNecessary ? successIcon : dangerIcon}
         alt=""
-        className={
-          isNecessary
-            ? 'h-22.75 w-22.75 xl:h-30 xl:w-30'
-            : 'h-25.5 w-25.5 xl:h-34 xl:w-34'
-        }
+        className={isNecessary ? 'h-22.75 w-22.75' : 'h-25.5 w-25.5'}
         aria-hidden="true"
       />
 
-      <p className="mt-5 text-[13px] font-medium text-[#899086] xl:text-[18px]">
+      <p className="mt-5 text-[13px] font-medium text-[#899086]">
         분석이 완료되었어요.
       </p>
-      <p className="text-[13px] font-medium text-[#899086] xl:text-[18px]">
+      <p className="text-[13px] font-medium text-[#899086]">
         AI가 당신의 답변을 바탕으로 다음과 같이 분석했어요.
       </p>
-      <h2 className="mt-3 text-[22px] font-bold text-black xl:text-[34px]">
+      <h2 className="mt-3 text-[22px] font-bold text-black">
         {verdict.title}
       </h2>
-      <p className="mt-3 text-[14px] leading-5.5 text-[#666] xl:text-[18px] xl:leading-7">
+      <p className="mt-3 text-[14px] leading-5.5 text-[#666]">
         {verdict.description}
       </p>
 
-      <div className="mt-8 flex w-full flex-col gap-4 xl:mt-10">
+      <div className="mt-8 flex w-full flex-col gap-4">
         {SCORE_ROWS.map(({ key, label }) => (
           <ScoreRow key={key} label={label} score={verdict.scores[key]} />
         ))}
       </div>
 
-      <div className="mt-10 flex w-full flex-col gap-3 xl:mt-14">
+      <div className="mt-10 flex w-full flex-col gap-3">
         <button
           type="button"
           onClick={onStartTimer}
           disabled={isSubmitting}
-          className="flex h-12.5 w-full items-center justify-center gap-2 rounded-[5px] bg-[#3e9b48] text-[16px] font-semibold text-white xl:h-16 xl:text-[24px]"
+          className="flex h-12.5 w-full items-center justify-center gap-2 rounded-[5px] bg-[#3e9b48] text-[16px] font-semibold text-white"
         >
           {isSubmitting && <Spinner className="h-4 w-4 border-white" />}
           24시간 고민 시작하기
@@ -93,7 +89,7 @@ export function VerdictResultStep({
           type="button"
           onClick={onGoHome}
           disabled={isSubmitting}
-          className="h-12.5 w-full rounded-[5px] border border-[#a9a9a9] bg-white text-[16px] font-semibold text-[#666] xl:h-16 xl:text-[24px]"
+          className="h-12.5 w-full rounded-[5px] border border-[#a9a9a9] bg-white text-[16px] font-semibold text-[#666]"
         >
           홈으로 돌아가기
         </button>

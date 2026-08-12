@@ -66,21 +66,19 @@ export function ProductInfoStep({
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-377.75 flex-col px-4 pt-6 pb-24 lg:px-8 lg:pt-8 lg:pb-16 xl:px-26.75 xl:pt-12">
-      <h1 className="text-[26px] font-semibold text-black lg:text-[34px] xl:text-[50px]">
-        새 고민 생성
-      </h1>
-      <p className="mt-2 text-[14px] text-[#666] lg:text-[16px] xl:mt-4 xl:text-[22px]">
+    <div className="mx-auto flex w-full max-w-377.75 flex-col px-4 pt-6 pb-24">
+      <h1 className="text-[26px] font-semibold text-black">새 고민 생성</h1>
+      <p className="mt-2 text-[14px] text-[#666]">
         사고 싶은 물건에 대한 정보를 입력해주세요.
       </p>
 
       <form
         onSubmit={handleSubmit}
         noValidate
-        className="mt-8 flex flex-col gap-8 lg:flex-row xl:mt-12 xl:gap-16"
+        className="mt-8 flex flex-col gap-8"
       >
         {/* 이미지 업로드 카드 (325×611, 확인 완료 2번: 빈 상태 아이콘은 lucide ImagePlus) */}
-        <div className="mx-auto w-full max-w-81.25 shrink-0 lg:mx-0">
+        <div className="mx-auto w-full max-w-81.25 shrink-0">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -98,7 +96,7 @@ export function ProductInfoStep({
                   className="h-18 w-18 text-[#a9a9a9]"
                   aria-hidden="true"
                 />
-                <span className="text-[15px] font-medium text-[#757575] xl:text-[20px]">
+                <span className="text-[15px] font-medium text-[#757575]">
                   사진 추가
                 </span>
               </>
@@ -122,17 +120,17 @@ export function ProductInfoStep({
             onChange={handleFileChange}
             className="hidden"
           />
-          <p className="mt-2 text-center text-[12px] text-[#a9a9a9] lg:text-left xl:text-[16px]">
+          <p className="mt-2 text-center text-[12px] text-[#a9a9a9]">
             사진을 첨부하지 않으면 기본 사진으로 등록됩니다.
           </p>
         </div>
 
         {/* 상품명 / 가격 / 카테고리 / 구매 URL */}
-        <div className="flex w-full flex-col gap-6 xl:gap-8">
+        <div className="flex w-full flex-col gap-6">
           <div>
             <label
               htmlFor="worry-name"
-              className="text-[15px] font-semibold text-black xl:text-[24px]"
+              className="text-[15px] font-semibold text-black"
             >
               상품명
             </label>
@@ -141,37 +139,37 @@ export function ProductInfoStep({
               value={productInfo.name}
               onChange={(event) => onChange({ name: event.target.value })}
               placeholder="상품명을 입력해주세요"
-              className="mt-2 h-11 w-full rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] text-black outline-none placeholder:text-[#a9a9a9] xl:mt-3 xl:h-15 xl:px-8 xl:text-[30px]"
+              className="mt-2 h-11 w-full rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] text-black outline-none placeholder:text-[#a9a9a9]"
             />
           </div>
 
           <div>
             <label
               htmlFor="worry-price"
-              className="text-[15px] font-semibold text-black xl:text-[24px]"
+              className="text-[15px] font-semibold text-black"
             >
               상품 가격
             </label>
-            <div className="mt-2 flex h-11 items-center rounded-[7px] border border-[#757575] bg-white px-4 xl:mt-3 xl:h-15 xl:px-8">
+            <div className="mt-2 flex h-11 items-center rounded-[7px] border border-[#757575] bg-white px-4">
               <input
                 id="worry-price"
                 inputMode="numeric"
                 value={productInfo.price === null ? '' : formatWon(productInfo.price)}
                 onChange={(event) => handlePriceChange(event.target.value)}
                 placeholder="0"
-                className="w-full bg-transparent text-[15px] text-black outline-none placeholder:text-[#a9a9a9] xl:text-[30px]"
+                className="w-full bg-transparent text-[15px] text-black outline-none placeholder:text-[#a9a9a9]"
               />
-              <span className="ml-2 shrink-0 text-[14px] text-[#899086] xl:text-[24px]">
+              <span className="ml-2 shrink-0 text-[14px] text-[#899086]">
                 원
               </span>
             </div>
           </div>
 
           <div>
-            <span className="text-[15px] font-semibold text-black xl:text-[24px]">
+            <span className="text-[15px] font-semibold text-black">
               카테고리
             </span>
-            <div className="mt-2 xl:mt-3">
+            <div className="mt-2">
               <CategoryDropdown
                 value={productInfo.category}
                 onChange={(category) => onChange({ category })}
@@ -182,7 +180,7 @@ export function ProductInfoStep({
           <div>
             <label
               htmlFor="worry-purchase-url"
-              className="text-[15px] font-semibold text-black xl:text-[24px]"
+              className="text-[15px] font-semibold text-black"
             >
               구매 사이트 URL{' '}
               <span className="font-normal text-[#a9a9a9]">(선택)</span>
@@ -195,14 +193,14 @@ export function ProductInfoStep({
                 onChange({ purchaseUrl: event.target.value })
               }
               placeholder="https://"
-              className="mt-2 h-11 w-full rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] text-black outline-none placeholder:text-[#a9a9a9] xl:mt-3 xl:h-15 xl:px-8 xl:text-[30px]"
+              className="mt-2 h-11 w-full rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] text-black outline-none placeholder:text-[#a9a9a9]"
             />
           </div>
 
           <button
             type="submit"
             disabled={!canSubmit}
-            className={`mt-4 h-11 w-full rounded-[9px] text-[15px] font-medium transition-colors xl:h-15 xl:text-[26px] ${
+            className={`mt-4 h-11 w-full rounded-[9px] text-[15px] font-medium transition-colors ${
               canSubmit
                 ? 'bg-[#e9f6e4] text-[#4fb75b]'
                 : 'cursor-not-allowed bg-[#e7eae4] text-[#a9a9a9]'

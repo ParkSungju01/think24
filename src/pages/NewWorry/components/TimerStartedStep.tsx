@@ -10,18 +10,15 @@ interface TimerStartedStepProps {
  */
 export function TimerStartedStep({ onGoToWorries }: TimerStartedStepProps) {
   return (
-    <div className="mx-auto flex w-full max-w-105 flex-col items-center px-6 pt-20 pb-24 text-center lg:pt-28 xl:max-w-140 xl:pt-36">
-      <div className="flex h-22 w-22 items-center justify-center rounded-full bg-[#e9f6e4] xl:h-28 xl:w-28">
-        <PartyPopper
-          className="h-10 w-10 text-[#4fb75b] xl:h-13 xl:w-13"
-          aria-hidden="true"
-        />
+    <div className="mx-auto flex w-full max-w-105 flex-col items-center px-6 pt-20 pb-24 text-center">
+      <div className="flex h-22 w-22 items-center justify-center rounded-full bg-[#e9f6e4]">
+        <PartyPopper className="h-10 w-10 text-[#4fb75b]" aria-hidden="true" />
       </div>
 
-      <h2 className="mt-6 text-[22px] font-bold text-black xl:mt-8 xl:text-[34px]">
+      <h2 className="mt-6 text-[22px] font-bold text-black">
         24시간 고민을 시작합니다!
       </h2>
-      <p className="mt-3 text-[14px] leading-5.5 text-[#666] xl:text-[18px] xl:leading-7">
+      <p className="mt-3 text-[14px] leading-5.5 text-[#666]">
         타이머가 시작되었습니다. 중간중간 작은 질문과 알림으로 더 현명한
         소비를 도와드릴게요.
       </p>
@@ -29,7 +26,7 @@ export function TimerStartedStep({ onGoToWorries }: TimerStartedStepProps) {
       <button
         type="button"
         onClick={onGoToWorries}
-        className="mt-10 h-11 w-60.75 rounded-[9px] bg-[#3e9b48] text-[15px] font-semibold text-white xl:mt-14 xl:h-14.5 xl:w-80 xl:text-[22px]"
+        className="mt-10 h-11 w-60.75 rounded-[9px] bg-[#3e9b48] text-[15px] font-semibold text-white"
       >
         고민 목록으로 가기
       </button>

@@ -1,16 +1,15 @@
 import { Outlet } from 'react-router-dom';
-import { Sidebar } from './Sidebar';
 import { MobileTopBar } from './MobileTopBar';
 import { BottomNav } from './BottomNav';
 
+// 이슈 #39: 데스크톱 사이드바(Sidebar)는 폰 프레임 안에 마운트 지점이 없어져 제거했다
+// (docs/plans/landing-phone-refactor.md 3-6, 파일 자체 삭제는 부수 정리 커밋에서 처리).
+// min-h-screen(브라우저 뷰포트 기준) → h-full(PhoneFrame 스크린 영역 기준)로 전환.
 export function AppLayout() {
   return (
-    // 확인 완료: 모바일(425px 미만) 프레임 배경은 피그마 실측 #eefff0(사이드바와 동일 톤),
-    // 425px 이상(사이드바 레이아웃)은 기존에 이미 검증된 흰색 콘텐츠 영역을 그대로 유지
-    <div className="flex min-h-screen flex-col bg-[#eefff0] lg:flex-row lg:bg-white">
-      <Sidebar />
+    <div className="flex h-full flex-col bg-[#eefff0]">
       <MobileTopBar />
-      <main className="min-w-0 flex-1 bg-[#eefff0] lg:bg-white">
+      <main className="min-w-0 flex-1 bg-[#eefff0]">
         <Outlet />
       </main>
       <BottomNav />

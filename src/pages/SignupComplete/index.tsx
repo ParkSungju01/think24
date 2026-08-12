@@ -91,8 +91,10 @@ export function SignupCompletePage() {
 
   return (
     <>
-      {/* 모바일 레이아웃 (< 426px, 피그마 App 가입완료·목표설정 182:475) */}
-      <div className="flex min-h-screen flex-col items-center bg-[#f4faef] px-6 pt-25 font-noto lg:hidden">
+      {/* 이슈 #39: 모바일 레이아웃(피그마 App 가입완료·목표설정 182:475)만 남기고 데스크톱
+          레이아웃은 삭제했다. min-h-screen(브라우저 뷰포트 기준) → h-full(PhoneFrame 스크린
+          영역 기준)로 전환. */}
+      <div className="flex h-full flex-col items-center bg-[#f4faef] px-6 pt-25 font-noto">
         <div className="flex w-full flex-col items-center gap-7">
           <div className="flex h-22 w-22 items-center justify-center rounded-[44px] bg-[#e9f6e4] text-[40px]">
             🎉
@@ -166,98 +168,6 @@ export function SignupCompletePage() {
             type="button"
             onClick={handleSkip}
             className="text-[13px] font-medium text-[#899086]"
-          >
-            나중에 설정할래요
-          </button>
-        </div>
-      </div>
-
-      {/* 데스크톱 레이아웃 (426px 이상, 기존 구현 그대로) */}
-      <div className="hidden min-h-screen items-center justify-center bg-[#f4faef] px-4 py-12 font-noto lg:flex">
-        <div className="flex w-full max-w-130 flex-col items-center gap-7 rounded-3xl bg-white p-12 shadow-[0px_8px_32px_0px_rgba(31,51,31,0.08)]">
-          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#e9f6e4] text-[36px]">
-            🎉
-          </div>
-
-          <div className="text-center">
-            <h1 className="text-[26px] font-bold text-[#1f2420]">
-              가입이 완료되었어요!
-            </h1>
-            <p className="mt-2 text-[14px] leading-5.5 text-[#899086]">
-              이번 달 절약 목표를 설정하면
-              <br />
-              대시보드에서 달성률을 한 눈에 볼 수 있어요.
-            </p>
-          </div>
-
-          <div className="w-full">
-            <label
-              htmlFor="goal-amount"
-              className="mb-2.5 block text-[14px] font-medium text-[#1f2420]"
-            >
-              월 절약 목표 금액
-            </label>
-            <div className="flex h-14 items-center justify-between rounded-xl border border-[#4fb75b] bg-[#fafbf8] px-4.25">
-              <input
-                id="goal-amount"
-                ref={amountInputRef}
-                inputMode="numeric"
-                value={goalAmount === 0 ? '' : formatWon(goalAmount)}
-                onChange={(event) => handleAmountChange(event.target.value)}
-                placeholder="100,000"
-                className="w-full bg-transparent text-[20px] font-bold text-[#1f2420] outline-none placeholder:text-[#adb3a9]"
-              />
-              <span className="ml-2 shrink-0 text-[16px] font-medium text-[#899086]">
-                원
-              </span>
-            </div>
-            {goalError && (
-              <p className="mt-2 text-[12px] text-[#e05b4e]">{goalError}</p>
-            )}
-            <div className="mt-2.5 flex flex-wrap gap-2">
-              {CHIP_OPTIONS.map((chip) => (
-                <button
-                  key={chip.value}
-                  type="button"
-                  onClick={() => handleChipClick(chip.value)}
-                  className={`h-8 rounded-full border px-5 text-[13px] font-medium transition-colors ${
-                    selectedChip === chip.value
-                      ? 'border-[#4fb75b] bg-[#e9f6e4] text-[#3e9b48]'
-                      : 'border-[#e7eae4] bg-white text-[#899086]'
-                  }`}
-                >
-                  {chip.label}
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => handleChipClick('custom')}
-                className={`h-8 rounded-full border px-5 text-[13px] font-medium transition-colors ${
-                  selectedChip === 'custom'
-                    ? 'border-[#4fb75b] bg-[#e9f6e4] text-[#3e9b48]'
-                    : 'border-[#e7eae4] bg-white text-[#899086]'
-                }`}
-              >
-                직접 입력
-              </button>
-            </div>
-          </div>
-
-          <div className="w-full">
-            <SubmitButton
-              active={goalAmount > 0 && goalError === null}
-              isSubmitting={isSubmitting}
-              type="button"
-              onClick={handleStart}
-            >
-              멈칫 시작하기
-            </SubmitButton>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleSkip}
-            className="text-[14px] font-medium text-[#899086]"
           >
             나중에 설정할래요
           </button>

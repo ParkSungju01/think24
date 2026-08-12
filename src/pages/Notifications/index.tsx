@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { ConfirmModal } from '../../components/ConfirmModal';
 import { NotificationEmptyState } from '../../components/NotificationBell/NotificationEmptyState';
 import { useNotifications } from '../../contexts/NotificationsContext';
-import { ROUTES } from '../../routes/paths';
 import { NotificationOverflowMenu } from './components/NotificationOverflowMenu';
 import { NotificationSwipeableListItem } from './components/NotificationSwipeableListItem';
 import { NotificationsHeader } from './components/NotificationsHeader';
@@ -11,10 +10,15 @@ import { NotificationsHeader } from './components/NotificationsHeader';
 type ModalState = { type: 'deleteAll' } | { type: 'deleteOne'; id: string } | null;
 
 /**
- * 이슈 #17: 모바일 전용 알림 화면. 확인 완료 사항대로 AppLayout 밖의 독립 풀스크린
- * 라우트로 구현하고(로그인/회원가입 페이지와 동일한 패턴), lg(426px) 이상 폭에서
- * 접근하면 홈으로 리다이렉트한다. 피그마 목업 자체가 모바일 전용 디자인이라
- * 데스크톱 대응 레이아웃은 존재하지 않는다(확인 완료).
+ * 이슈 #17: 모바일 전용 알림 화면. AppLayout 밖의 독립 풀스크린 라우트로 구현했다(로그인/
+ * 회원가입 페이지와 동일한 패턴). 피그마 목업 자체가 모바일 전용 디자인이라 데스크톱 대응
+ * 레이아웃은 존재하지 않는다(확인 완료).
+ *
+ * 이슈 #39: 이전에는 426px 이상 폭에서 이 라우트에 접근하면 홈으로 리다이렉트하는
+ * matchMedia useEffect가 있었다("웹은 드롭다운을 쓴다"는 옛 구조 전제). 이제 모든 라우트가
+ * 항상 PhoneFrame(고정된 좁은 폭) 안에서 렌더링되고 NotificationBell의 dropdown variant도
+ * 삭제돼 그 전제가 사라졌으므로, 리다이렉트 로직 자체를 통째로 제거했다
+ * (docs/plans/landing-phone-refactor.md 2-4 — CSS 클래스가 아니라 로직 삭제 대상).
  */
 export function NotificationsPage() {
   const navigate = useNavigate();
@@ -31,25 +35,6 @@ export function NotificationsPage() {
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [modal, setModal] = useState<ModalState>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
-
-  // 확인 완료: lg(426px) 이상 폭에서 이 라우트에 접근하면 홈으로 리다이렉트한다.
-  // 피그마에 데스크톱 버전 목업이 없고, 웹은 이미 별도의 드롭다운 UI(NotificationBell)를 쓴다.
-  // (CSS --breakpoint-lg와 동일하게 426px로 맞춤: Tailwind lg:는 min-width라 425px 자체를
-  // 모바일로 두려면 매치 기준이 426px이어야 CSS/JS 판단이 정확히 일치한다.)
-  useEffect(() => {
-    const query = window.matchMedia('(min-width: 426px)');
-    if (query.matches) {
-      navigate(ROUTES.home, { replace: true });
-      return;
-    }
-    const handleChange = (event: MediaQueryListEvent) => {
-      if (event.matches) {
-        navigate(ROUTES.home, { replace: true });
-      }
-    };
-    query.addEventListener('change', handleChange);
-    return () => query.removeEventListener('change', handleChange);
-  }, [navigate]);
 
   // 오버플로우 메뉴 바깥 클릭 시 닫힘 (NotificationBell의 outside-click 패턴 재사용)
   useEffect(() => {
@@ -101,7 +86,7 @@ export function NotificationsPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-white">
+    <div className="flex h-full flex-col bg-white">
       <NotificationsHeader
         ref={menuContainerRef}
         isMenuDisabled={notifications.length === 0}
