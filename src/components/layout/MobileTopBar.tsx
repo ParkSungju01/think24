@@ -7,8 +7,8 @@ export function MobileTopBar() {
     // 그대로 재사용하고 상하 여백(py-5)으로 93px 높이에 근접하도록 배치
     <header className="flex items-center justify-between bg-[#eefff0] py-5 pl-5.75 pr-5.75">
       <BrandLogo />
-      {/* 이슈 #17 확인 완료: 모바일 벨은 드롭다운이 아니라 /notifications 풀스크린 페이지로 이동 */}
-      <NotificationBell variant="page" />
+      {/* 이슈 #17 확인 완료: 벨을 누르면 드롭다운이 아니라 /notifications 풀스크린 페이지로 이동 */}
+      <NotificationBell />
     </header>
   );
 }
