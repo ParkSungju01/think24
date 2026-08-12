@@ -49,7 +49,7 @@ export function NewWorryPage() {
 
   return (
     <div className="flex flex-col">
-      <div className="pt-6 lg:pt-8 xl:pt-10">
+      <div className="pt-6">
         <WizardStepper step={flow.step} />
       </div>
 

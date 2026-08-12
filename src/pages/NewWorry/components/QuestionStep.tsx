@@ -45,30 +45,30 @@ export function QuestionStep({
   const options = useMemo(() => resolveOptions(question), [question]);
 
   return (
-    <div className="mx-auto flex w-full max-w-105 flex-col px-6 pt-10 pb-24 lg:pt-14 xl:max-w-160 xl:pt-20">
-      <p className="text-[14px] font-semibold text-[#4fb75b] xl:text-[20px]">
+    <div className="mx-auto flex w-full max-w-105 flex-col px-6 pt-10 pb-24">
+      <p className="text-[14px] font-semibold text-[#4fb75b]">
         AI 질문 ({questionIndex + 1}/{totalQuestions})
       </p>
 
-      <h2 className="mt-3 text-[20px] font-bold leading-6.5 text-black xl:mt-5 xl:text-[32px] xl:leading-10">
+      <h2 className="mt-3 text-[20px] font-bold leading-6.5 text-black">
         {question.question}
       </h2>
 
       <button
         type="button"
         onClick={() => setIsReasonOpen((prev) => !prev)}
-        className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-[#899086] xl:text-[18px]"
+        className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-[#899086]"
       >
-        <Lightbulb className="h-4 w-4 xl:h-5 xl:w-5" aria-hidden="true" />
+        <Lightbulb className="h-4 w-4" aria-hidden="true" />
         AI가 이 질문을 하는 이유
       </button>
       {isReasonOpen && (
-        <p className="mt-2 rounded-xl bg-[#f6fef7] p-4 text-[13px] leading-5 text-[#666] xl:text-[17px] xl:leading-6.5">
+        <p className="mt-2 rounded-xl bg-[#f6fef7] p-4 text-[13px] leading-5 text-[#666]">
           {question.reason}
         </p>
       )}
 
-      <div className="mt-8 flex flex-col gap-3 xl:mt-10 xl:gap-4">
+      <div className="mt-8 flex flex-col gap-3">
         {options.map((option) => {
           const isSelected = selectedAnswer === option;
           return (
@@ -77,7 +77,7 @@ export function QuestionStep({
               type="button"
               onClick={() => onSelectAnswer(option)}
               aria-pressed={isSelected}
-              className={`flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[15px] font-medium transition-colors xl:px-6 xl:py-5 xl:text-[22px] ${
+              className={`flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[15px] font-medium transition-colors ${
                 isSelected
                   ? 'border-[#4fb75b] bg-[#e9f6e4] text-[#3e9b48]'
                   : 'border-[#dedede] bg-white text-black'
@@ -85,12 +85,12 @@ export function QuestionStep({
             >
               {isSelected ? (
                 <CircleCheck
-                  className="h-5 w-5 shrink-0 text-[#4fb75b] xl:h-7 xl:w-7"
+                  className="h-5 w-5 shrink-0 text-[#4fb75b]"
                   aria-hidden="true"
                 />
               ) : (
                 <Circle
-                  className="h-5 w-5 shrink-0 text-[#a9a9a9] xl:h-7 xl:w-7"
+                  className="h-5 w-5 shrink-0 text-[#a9a9a9]"
                   aria-hidden="true"
                 />
               )}
@@ -100,20 +100,20 @@ export function QuestionStep({
         })}
       </div>
 
-      <div className="mt-10 flex items-center gap-3 xl:mt-14">
+      <div className="mt-10 flex items-center gap-3">
         <button
           type="button"
           onClick={onPrevious}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[9px] border border-[#a9a9a9] text-[#666] xl:h-15 xl:w-15"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[9px] border border-[#a9a9a9] text-[#666]"
           aria-label="이전"
         >
-          <ChevronLeft className="h-5 w-5 xl:h-7 xl:w-7" aria-hidden="true" />
+          <ChevronLeft className="h-5 w-5" aria-hidden="true" />
         </button>
         <button
           type="button"
           onClick={onNext}
           disabled={!selectedAnswer}
-          className={`h-11 flex-1 rounded-[9px] text-[15px] font-medium transition-colors xl:h-15 xl:text-[24px] ${
+          className={`h-11 flex-1 rounded-[9px] text-[15px] font-medium transition-colors ${
             selectedAnswer
               ? 'bg-[#3e9b48] text-white'
               : 'cursor-not-allowed bg-[#e7eae4] text-[#a9a9a9]'

@@ -31,13 +31,13 @@ export function CategoryDropdown({ value, onChange }: CategoryDropdownProps) {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className={`flex h-11 w-full items-center justify-between rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] outline-none xl:h-15 xl:px-8 xl:text-[30px] ${
+        className={`flex h-11 w-full items-center justify-between rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] outline-none ${
           value ? 'text-black' : 'text-[#a9a9a9]'
         }`}
       >
         <span>{value || '카테고리를 선택해주세요'}</span>
         <ChevronDown
-          className={`h-5 w-5 shrink-0 transition-transform xl:h-7 xl:w-7 ${isOpen ? 'rotate-180' : ''}`}
+          className={`h-5 w-5 shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`}
           aria-hidden="true"
         />
       </button>
@@ -57,7 +57,7 @@ export function CategoryDropdown({ value, onChange }: CategoryDropdownProps) {
                   onChange(category);
                   setIsOpen(false);
                 }}
-                className={`block w-full px-4 py-2.5 text-left text-[15px] xl:px-8 xl:py-3.5 xl:text-[28px] ${
+                className={`block w-full px-4 py-2.5 text-left text-[15px] ${
                   value === category
                     ? 'bg-[#e9f6e4] text-[#3e9b48]'
                     : 'text-black hover:bg-[#f7f7f7]'
