@@ -112,7 +112,7 @@ export function MyPage() {
             <button
               type="submit"
               disabled={!canSubmit || isSubmitting}
-              className={`mx-auto mt-8 h-8.25 w-46.75 rounded-[9px] text-[15px] font-medium transition-colors ${submitColorClassName} ${
+              className={`mx-auto mt-8 h-8.25 w-46.75 rounded-[9px] text-[15px] font-medium cursor-pointer transition-colors ${submitColorClassName} ${
                 !canSubmit || isSubmitting ? 'cursor-not-allowed' : ''
               }`}
             >
@@ -126,7 +126,7 @@ export function MyPage() {
         <button
           type="button"
           onClick={() => setIsLogoutModalOpen(true)}
-          className="mx-auto mt-16.25 px-4 py-3 text-[12px] font-medium text-[#899086]"
+          className="mx-auto mt-16.25 px-4 py-3 text-[12px] font-medium text-[#899086] cursor-pointer"
         >
           로그아웃
         </button>
