@@ -18,7 +18,7 @@ export function NotificationBell() {
       type="button"
       aria-label="알림"
       onClick={() => navigate(ROUTES.notifications)}
-      className="flex h-9 w-9 items-center justify-center"
+      className="flex h-9 w-9 items-center justify-center cursor-pointer"
     >
       {/* 확인 완료: 읽지 않음을 별도 뱃지 dot으로 표시하지 않고, 벨 아이콘 자체를 바꾼다.
           안읽은 알림이 하나라도 있으면 alarm-exist.svg, 전부 읽었거나 0건이면 alarm.svg */}

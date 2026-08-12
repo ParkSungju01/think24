@@ -1,10 +1,7 @@
-import { House } from 'lucide-react';
+import { ChartColumnBig, CircleUser, House, ListTodo } from 'lucide-react';
 import { BottomNavItem } from './BottomNavItem';
 import { NewWorryFab } from './NewWorryFab';
 import { ROUTES } from '../../routes/paths';
-import reportIcon from '../../assets/report.svg';
-import listIcon from '../../assets/list.svg';
-import myPageIcon from '../../assets/my-page.svg';
 
 export function BottomNav() {
   return (
@@ -20,18 +17,13 @@ export function BottomNav() {
     // -translate-y로만 표현해 레이아웃 흐름(간격 계산)에는 영향을 주지 않게 함.
     <nav className="absolute inset-x-0 bottom-0 z-10 flex h-18.75 items-center bg-white">
       <div className="flex flex-1 justify-center">
-        <BottomNavItem
-          to={ROUTES.home}
-          label="홈"
-          icon={<House className="h-7.5 w-7.5" />}
-          end
-        />
+        <BottomNavItem to={ROUTES.home} label="홈" icon={House} end />
       </div>
       <div className="flex flex-1 justify-center">
         <BottomNavItem
           to={ROUTES.records}
           label="소비 기록"
-          icon={<img src={reportIcon} alt="" className="h-7.5 w-7.5" />}
+          icon={ChartColumnBig}
           end
         />
       </div>
@@ -45,7 +37,7 @@ export function BottomNav() {
         <BottomNavItem
           to={ROUTES.worries}
           label="고민 목록"
-          icon={<img src={listIcon} alt="" className="h-7.5 w-7.5" />}
+          icon={ListTodo}
           end
         />
       </div>
@@ -53,7 +45,7 @@ export function BottomNav() {
         <BottomNavItem
           to={ROUTES.mypage}
           label="프로필"
-          icon={<img src={myPageIcon} alt="" className="h-7.5 w-7.5" />}
+          icon={CircleUser}
           end
         />
       </div>
