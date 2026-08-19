@@ -12,6 +12,7 @@ import { NotificationsPage } from './pages/Notifications';
 import { RecordsPage } from './pages/Records';
 import { SignUpPage } from './pages/SignUp';
 import { SignupCompletePage } from './pages/SignupComplete';
+import { WorriesPage } from './pages/Worries';
 import { ROUTES } from './routes/paths';
 
 function App() {
@@ -26,6 +27,7 @@ function App() {
               <Route element={<AppLayout />}>
                 <Route path={ROUTES.home} element={<HomePage />} />
                 <Route path={ROUTES.newWorry} element={<NewWorryPage />} />
+                <Route path={ROUTES.worries} element={<WorriesPage />} />
                 <Route path={ROUTES.records} element={<RecordsPage />} />
                 <Route path={ROUTES.mypage} element={<MyPage />} />
               </Route>
