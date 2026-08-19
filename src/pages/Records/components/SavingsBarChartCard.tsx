@@ -5,7 +5,7 @@ import {
   ResponsiveContainer,
   XAxis,
 } from 'recharts';
-import { formatWon } from '../../../utils/format';
+import { formatWon, formatWonCompact } from '../../../utils/format';
 import type {
   RecordPeriod,
   SavingsBarPoint,
@@ -32,6 +32,12 @@ export function SavingsBarChartCard({
   if (period === 'all') return null;
 
   const title = TITLE_BY_PERIOD[period];
+  // 버그 수정(이슈 #44): "최근 1년"은 막대 12개라 간격이 좁아 formatWon 풀포맷 라벨끼리
+  // 겹친다. 막대 수가 적은 이번 달(4개)/최근 3개월(3개)은 공간 여유가 있고 피그마 실측
+  // 문구와도 일치해야 하니 풀포맷을 그대로 유지, lastYear만 압축 포맷+작은 폰트로 전환한다.
+  const isDense = period === 'lastYear';
+  const labelFormatter = isDense ? formatWonCompact : formatWon;
+  const labelFontSize = isDense ? 9 : 10;
 
   return (
     <div className="flex w-full flex-col gap-4 rounded-[14px] border border-[rgba(188,230,193,0.55)] bg-white p-4 shadow-[1px_1px_3px_-1px_rgba(0,0,0,0.25)]">
@@ -39,7 +45,7 @@ export function SavingsBarChartCard({
 
       <div className="h-45.5 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={points} margin={{ top: 20, left: 0, right: 0 }}>
+          <BarChart data={points} margin={{ top: 20, left: 0, right: 10 }}>
             <XAxis
               dataKey="label"
               axisLine={false}
@@ -51,9 +57,13 @@ export function SavingsBarChartCard({
                 dataKey="amount"
                 position="top"
                 formatter={(value: number | string | boolean | null | undefined) =>
-                  typeof value === 'number' ? `${formatWon(value)}원` : ''
+                  typeof value === 'number'
+                    ? isDense
+                      ? labelFormatter(value)
+                      : `${labelFormatter(value)}원`
+                    : ''
                 }
-                style={{ fontSize: 10, fill: '#000', fontWeight: 600 }}
+                style={{ fontSize: labelFontSize, fill: '#000', fontWeight: 600 }}
               />
             </Bar>
           </BarChart>

@@ -36,7 +36,7 @@ export function PeriodDropdown({ value, onChange }: PeriodDropdownProps) {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className="flex h-7.5 w-22.25 items-center justify-between rounded-[6px] border-[0.5px] border-[#b3b3b3] bg-white px-3 text-[13px] font-medium text-black"
+        className="flex h-7.5 w-22.25 items-center justify-between rounded-md border-[0.5px] border-[#b3b3b3] bg-white px-3 text-[13px] font-medium text-black"
       >
         <span>{selectedLabel}</span>
         <ChevronDown
