@@ -8,6 +8,7 @@ export interface WorryRecord {
   id: string;
   name: string;
   price: number;
+  category: string;
   thumbnailUrl: string | null;
   status: WorryStatus;
   createdAt: Date;
@@ -19,6 +20,7 @@ interface WorryRow {
   id: string;
   name: string;
   price: number;
+  category: string;
   thumbnail_url: string | null;
   status: WorryStatus;
   created_at: string;
@@ -31,6 +33,7 @@ function toWorryRecord(row: WorryRow): WorryRecord {
     id: row.id,
     name: row.name,
     price: row.price,
+    category: row.category,
     thumbnailUrl: row.thumbnail_url,
     status: row.status,
     createdAt: new Date(row.created_at),
@@ -53,7 +56,7 @@ export async function fetchRecentWorries(
   const { data, error } = await supabase
     .from('worries')
     .select(
-      'id, name, price, thumbnail_url, status, created_at, decided_at, deadline_at',
+      'id, name, price, category, thumbnail_url, status, created_at, decided_at, deadline_at',
     )
     .eq('user_id', userId)
     .or(`created_at.gte.${start},decided_at.gte.${start}`)
@@ -106,7 +109,7 @@ export async function createWorry(
       ai_verdict: input.aiVerdict,
     })
     .select(
-      'id, name, price, thumbnail_url, status, created_at, decided_at, deadline_at',
+      'id, name, price, category, thumbnail_url, status, created_at, decided_at, deadline_at',
     )
     .single();
 

@@ -2,6 +2,20 @@ export function formatWon(amount: number): string {
   return amount.toLocaleString('ko-KR');
 }
 
+/**
+ * 이슈 #44 버그 수정: `SavingsBarChartCard`의 "최근 1년"(막대 12개) 변형은 막대 간격이 좁아
+ * `formatWon` 풀포맷 라벨("220,000원")을 쓰면 인접 라벨끼리 겹친다. 1만원 미만은 기존과 동일하게
+ * 표시하고, 1만원 이상은 가장 가까운 "만원" 단위로 반올림해 소수점 없이 보여준다.
+ * 예: 220000 → "22만원", 95000 → "10만원"(9.5 반올림), 153000 → "15만원", 218000 → "22만원".
+ */
+export function formatWonCompact(amount: number): string {
+  if (amount < 10_000) {
+    return `${amount.toLocaleString('ko-KR')}원`;
+  }
+
+  return `${Math.round(amount / 10_000)}만원`;
+}
+
 /** 초 단위 잔여 시간을 HH:MM:SS 형태로 표시 */
 export function formatRemainingTime(totalSeconds: number): string {
   const clamped = Math.max(0, totalSeconds);
