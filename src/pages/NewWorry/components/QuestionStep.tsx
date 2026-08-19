@@ -57,7 +57,7 @@ export function QuestionStep({
       <button
         type="button"
         onClick={() => setIsReasonOpen((prev) => !prev)}
-        className="mt-3 flex items-center gap-1.5 text-[13px] font-medium text-[#899086]"
+        className="mt-3 flex cursor-pointer items-center gap-1.5 text-[13px] font-medium text-[#899086]"
       >
         <Lightbulb className="h-4 w-4" aria-hidden="true" />
         AI가 이 질문을 하는 이유
@@ -77,7 +77,7 @@ export function QuestionStep({
               type="button"
               onClick={() => onSelectAnswer(option)}
               aria-pressed={isSelected}
-              className={`flex items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[15px] font-medium transition-colors ${
+              className={`flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3.5 text-left text-[15px] font-medium transition-colors ${
                 isSelected
                   ? 'border-[#4fb75b] bg-[#e9f6e4] text-[#3e9b48]'
                   : 'border-[#dedede] bg-white text-black'
@@ -104,7 +104,7 @@ export function QuestionStep({
         <button
           type="button"
           onClick={onPrevious}
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[9px] border border-[#a9a9a9] text-[#666]"
+          className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-[9px] border border-[#a9a9a9] text-[#666]"
           aria-label="이전"
         >
           <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -115,7 +115,7 @@ export function QuestionStep({
           disabled={!selectedAnswer}
           className={`h-11 flex-1 rounded-[9px] text-[15px] font-medium transition-colors ${
             selectedAnswer
-              ? 'bg-[#3e9b48] text-white'
+              ? 'cursor-pointer bg-[#3e9b48] text-white'
               : 'cursor-not-allowed bg-[#e7eae4] text-[#a9a9a9]'
           }`}
         >

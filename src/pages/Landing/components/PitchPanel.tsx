@@ -107,8 +107,8 @@ export function PitchPanel({ className = '' }: PitchPanelProps) {
 
       <div className="flex items-center gap-3 rounded-2xl bg-[#e9f6e4] p-3 text-[13px] font-medium text-[#3e9b48]">
         <MousePointerClick className="h-5 w-5 shrink-0" aria-hidden="true" />
-        오른쪽 화면을 직접 눌러보세요. 로그인부터 새 고민 등록까지 실제로
-        동작하는 프로토타입입니다.
+        오른쪽 화면을 직접 눌러보세요. 새 고민 등록 및 결정을 실제로
+        체험 할 수 있는 프로토타입입니다.
       </div>
     </div>
   );

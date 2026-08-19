@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { upsertGoal } from '../../lib/goals';
 import {
   clearSignupJustCompletedFlag,
   hasJustSignedUpFlag,
@@ -34,7 +33,6 @@ export function SignupCompletePage() {
     DEFAULT_GOAL_AMOUNT,
   );
   const [goalError, setGoalError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!hasJustSignedUpFlag() || !user) {
     return <Navigate to={ROUTES.home} replace />;
@@ -66,18 +64,10 @@ export function SignupCompletePage() {
     setGoalError(null);
   };
 
-  const handleStart = async () => {
+  const handleStart = () => {
     const error = validateAmount(goalAmount);
     if (error) {
       setGoalError(error);
-      return;
-    }
-    setIsSubmitting(true);
-    const { error: saveError } = await upsertGoal(user.id, goalAmount);
-    setIsSubmitting(false);
-
-    if (saveError) {
-      setGoalError(`목표 저장에 실패했습니다: ${saveError}`);
       return;
     }
     clearSignupJustCompletedFlag();
@@ -155,7 +145,6 @@ export function SignupCompletePage() {
           <div className="w-full">
             <SubmitButton
               active={goalAmount > 0 && goalError === null}
-              isSubmitting={isSubmitting}
               type="button"
               onClick={handleStart}
               heightClassName="h-12"

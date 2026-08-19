@@ -24,7 +24,7 @@ export const NotificationsHeader = forwardRef<HTMLDivElement, NotificationsHeade
           type="button"
           aria-label="뒤로가기"
           onClick={onBack}
-          className="flex h-8 w-8 items-center justify-center text-black"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center text-black"
         >
           {/* 케밥(29px)과 시각적 크기감을 맞추기 위해 동일하게 size-7.25(29px) 적용 */}
           <ChevronLeft className="size-7.25" />
@@ -35,7 +35,7 @@ export const NotificationsHeader = forwardRef<HTMLDivElement, NotificationsHeade
             aria-label="더보기"
             disabled={isMenuDisabled}
             onClick={onToggleMenu}
-            className="flex h-8 w-8 items-center justify-center text-black disabled:cursor-not-allowed disabled:opacity-40"
+            className="flex h-8 w-8 cursor-pointer items-center justify-center text-black disabled:cursor-not-allowed disabled:opacity-40"
           >
             {/* 피그마 실측: 케밥 아이콘 29×29px → size-7.25(7.25×4=29px), 검정 */}
             <MoreVertical className="size-7.25 text-black" />

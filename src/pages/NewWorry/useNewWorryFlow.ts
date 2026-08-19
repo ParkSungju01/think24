@@ -34,9 +34,10 @@ const INITIAL_PRODUCT_INFO: ProductInfoInput = {
 /**
  * docs/plans/new-worry.md "화면 구성 > 상태/데이터" 그대로의 단일 상태 머신 훅.
  * 스텝 1~4(상품 정보/질문 생성 로딩/질문 응답/판정 로딩)까지는 전부 로컬 상태만 다루고,
- * 스텝 5("24시간 고민 시작하기")에서만 실제 Supabase 쓰기(이미지 업로드 + insert)가 발생한다.
+ * 스텝 5("24시간 고민 시작하기")에서만 실제 로컬 쓰기(썸네일 리사이즈 + localStorage insert)가
+ * 발생한다.
  */
-export function useNewWorryFlow(userId: string | undefined) {
+export function useNewWorryFlow() {
   const [step, setStep] = useState<NewWorryStep>('productInfo');
   const [productInfo, setProductInfo] = useState<ProductInfoInput>(
     INITIAL_PRODUCT_INFO,
@@ -149,17 +150,14 @@ export function useNewWorryFlow(userId: string | undefined) {
 
   // 스텝 5 "24시간 고민 시작하기"
   async function startTimer() {
-    if (!userId || !questions || !verdict || isSubmitting) return;
+    if (!questions || !verdict || isSubmitting) return;
 
     setSubmitError(null);
     setIsSubmitting(true);
 
     let thumbnailUrl: string | null = null;
     if (productInfo.imageFile) {
-      const { url, error } = await uploadWorryThumbnail(
-        userId,
-        productInfo.imageFile,
-      );
+      const { url, error } = await uploadWorryThumbnail(productInfo.imageFile);
       if (error) {
         console.error('uploadWorryThumbnail 실패:', error);
         setSubmitError('이미지 업로드에 실패했습니다.');
@@ -175,7 +173,6 @@ export function useNewWorryFlow(userId: string | undefined) {
     }));
 
     const { error } = await createWorry({
-      userId,
       name: productInfo.name,
       price: productInfo.price ?? 0,
       category: productInfo.category,
