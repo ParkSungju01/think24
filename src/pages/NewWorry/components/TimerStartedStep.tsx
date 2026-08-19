@@ -26,7 +26,7 @@ export function TimerStartedStep({ onGoToWorries }: TimerStartedStepProps) {
       <button
         type="button"
         onClick={onGoToWorries}
-        className="mt-10 h-11 w-60.75 rounded-[9px] bg-[#3e9b48] text-[15px] font-semibold text-white"
+        className="mt-10 h-11 w-60.75 cursor-pointer rounded-[9px] bg-[#3e9b48] text-[15px] font-semibold text-white"
       >
         고민 목록으로 가기
       </button>

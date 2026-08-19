@@ -33,14 +33,14 @@ export function ConfirmModal({ message, onConfirm, onCancel }: ConfirmModalProps
           <button
             type="button"
             onClick={onConfirm}
-            className="h-6 w-24.5 rounded-md bg-[#eefff0] text-[14px] font-medium text-black"
+            className="h-6 w-24.5 cursor-pointer rounded-md bg-[#eefff0] text-[14px] font-medium text-black"
           >
             네
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="h-6 w-24.5 rounded-md bg-[#eefff0] text-[14px] font-medium text-black"
+            className="h-6 w-24.5 cursor-pointer rounded-md bg-[#eefff0] text-[14px] font-medium text-black"
           >
             아니요
           </button>

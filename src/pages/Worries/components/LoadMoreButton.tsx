@@ -10,7 +10,7 @@ export function LoadMoreButton({ hiddenCount, onClick }: LoadMoreButtonProps) {
     <button
       type="button"
       onClick={onClick}
-      className="h-11 w-full rounded-[10px] border border-[#dedede] bg-white text-[14px] font-medium text-black"
+      className="h-11 w-full cursor-pointer rounded-[10px] border border-[#dedede] bg-white text-[14px] font-medium text-black"
     >
       더 보기 ({hiddenCount}건 남음)
     </button>

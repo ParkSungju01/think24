@@ -1,10 +1,12 @@
 // docs/plans/new-worry.md "Edge Function 설계 > 1. ai-generate-questions"
 //
-// 로그인 사용자가 입력한 상품 정보를 바탕으로, "필요한 소비인지 충동적인 소비인지 판단하기
-// 위한" 질문 5개(+ 각 질문을 하는 이유)를 OpenAI(gpt-4o-mini)로 생성해 반환한다.
+// 사용자가 입력한 상품 정보를 바탕으로, "필요한 소비인지 충동적인 소비인지 판단하기 위한"
+// 질문 5개(+ 각 질문을 하는 이유)를 OpenAI(gpt-4o-mini)로 생성해 반환한다.
 // OpenAI API 키는 이 함수(서버) 안에서만 사용하고 절대 프론트엔드로 노출하지 않는다.
+// 이슈 #48(docs/plans/local-only-migration.md): 로그인 인증 체크는 제거하고, 비로그인 상태의
+// 무제한 호출을 막기 위해 IP 기준 rate limit(10분/5회)으로 대체했다.
 import { corsHeaders, jsonResponse } from '../_shared/cors.ts';
-import { requireAuthenticatedUser } from '../_shared/auth.ts';
+import { checkRateLimit, getClientIp } from '../_shared/rateLimit.ts';
 
 interface RequestBody {
   name: string;
@@ -56,9 +58,13 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ error: '허용되지 않은 메서드입니다.' }, 405);
   }
 
-  const authResult = await requireAuthenticatedUser(req);
-  if ('errorResponse' in authResult) {
-    return authResult.errorResponse;
+  const ip = getClientIp(req);
+  const rateLimitResult = checkRateLimit(ip);
+  if (!rateLimitResult.allowed) {
+    return jsonResponse(
+      { error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' },
+      429,
+    );
   }
 
   let body: RequestBody;

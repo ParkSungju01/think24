@@ -1,7 +1,10 @@
-import { Clock, Clock2 } from "lucide-react";
+import { Clock, CircleCheck } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import type { OngoingWorry } from "../../../types/home";
 import { formatRemainingTime, formatWon } from "../../../utils/format";
 import { useCountdown } from "../../../hooks/useCountdown";
+import { WorryThumbnail } from "../../../components/WorryThumbnail";
+import { ROUTES } from "../../../routes/paths";
 
 const TIMER_EXTEND_THRESHOLD_SECONDS = 3600;
 
@@ -10,6 +13,7 @@ interface WorryListItemProps {
 }
 
 export function WorryListItem({ worry }: WorryListItemProps) {
+  const navigate = useNavigate();
   // 실사용 피드백: 새로고침해야만 타이머가 줄어들던 문제 수정 — useHomeData가 조회 시점에
   // 한 번만 계산해준 worry.remainingSeconds/progressPercent 대신, 이미 로그인/카운트다운
   // 잠금 화면 등에서 검증된 useCountdown(1초 간격 tick, 언마운트 시 clearInterval)으로
@@ -24,27 +28,20 @@ export function WorryListItem({ worry }: WorryListItemProps) {
   const canExtendTimer = remainingSeconds <= TIMER_EXTEND_THRESHOLD_SECONDS;
 
   return (
-    // flex-wrap을 둬서 아주 좁은 폭에서 "타이머 늘리기" 버튼이 카드 밖으로 넘치는 대신 다음 줄로
+    // flex-wrap을 둬서 아주 좁은 폭에서 "최종결정하기" 버튼이 카드 밖으로 넘치는 대신 다음 줄로
     // 내려가도록 함
     <div className="flex flex-wrap items-center gap-4 rounded-[14px] border border-gray-100 bg-white p-3 shadow-[0px_0px_-4px_-1px_rgba(0,0,0,0.25)]">
-      {/* 확인 완료: 상품 등록 기능이 아직 없어 실사 이미지 대신 임시 플레이스홀더 사용 */}
-      {worry.thumbnailUrl ? (
-        <img
-          src={worry.thumbnailUrl}
-          alt={worry.name}
-          className="h-16 w-16 shrink-0 rounded-[10px] object-cover"
-        />
-      ) : (
-        <div
-          className="h-16 w-16 shrink-0 rounded-[10px] bg-[#f5f5f5]"
-          aria-hidden="true"
-        />
-      )}
+      {/* 썸네일 미등록 시 회색 빈 박스 대신 브랜드 로고 기본 썸네일(WorryThumbnail)을 보여준다. */}
+      <WorryThumbnail
+        src={worry.thumbnailUrl}
+        alt={worry.name}
+        sizeClassName="h-16 w-16 rounded-[10px]"
+      />
       {/* 리뷰 재작업(피그마 30:44/31:48/31:56/32:73 재실측): 카드 상단 기준 제목 13px→가격 34px→
           시간 52px→진행바 69px 순으로 "세로로" 쌓여 있고, 버튼은 진행바가 아니라 제목과 같은 높이(11px)에서
           시작한다. 바깥 컬럼에 flex-1이 없어 카드의 남는 폭을 차지하지 못했던 것도 함께 수정 */}
       <div className="flex flex-1 flex-col justify-between">
-        {/* 제목/가격/시간을 세로 스택 서브 그룹으로 묶어 왼쪽에 두고, "타이머 늘리기" 버튼은 형제로 분리해
+        {/* 제목/가격/시간을 세로 스택 서브 그룹으로 묶어 왼쪽에 두고, "최종결정하기" 버튼은 형제로 분리해
             이 줄에 items-start(제목과 높이를 맞춤) + justify-between(버튼을 오른쪽 끝으로)을 적용.
             flex-wrap은 유지해 좁은 폭에서는 버튼이 다음 줄로 내려가는 기존 동작을 보존 */}
         <div className="flex flex-wrap items-start justify-between gap-2">
@@ -63,13 +60,16 @@ export function WorryListItem({ worry }: WorryListItemProps) {
             </div>
           </div>
           {canExtendTimer && (
-            // 확인 완료: 클릭 시 동작 없음 (no-op)
+            // 타이머가 거의 끝나가는 진행 중 고민은 "타이머 늘리기"(no-op) 대신 실제 결정
+            // 화면(고민 목록의 최종 결정 바텀시트)으로 보낸다 — WorryCard.tsx의 "최종 결정하기"와
+            // 동일한 목적지/문구.
             <button
               type="button"
-              className="flex shrink-0 items-center gap-1 rounded-md bg-[#7ccf8a] px-2 py-1 text-[10px] font-semibold text-white"
+              onClick={() => navigate(ROUTES.worries)}
+              className="flex shrink-0 cursor-pointer items-center gap-1 rounded-md bg-[#7ccf8a] px-2 py-1 text-[10px] font-semibold text-white"
             >
-              <Clock2 className="h-3 w-3" />
-              타이머 늘리기
+              <CircleCheck className="h-3 w-3" />
+              최종결정하기
             </button>
           )}
         </div>

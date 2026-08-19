@@ -40,7 +40,7 @@ export function DecisionSheet({
           type="button"
           onClick={onDismiss}
           aria-label="닫기"
-          className="mx-auto block h-1 w-12 rounded-full bg-[#dedede]"
+          className="mx-auto block h-1 w-12 cursor-pointer rounded-full bg-[#dedede]"
         />
 
         <h2 className="mt-5 text-[20px] font-bold text-black">
@@ -69,14 +69,14 @@ export function DecisionSheet({
           <button
             type="button"
             onClick={onAbandon}
-            className="h-13 rounded-[10px] bg-[#3e9b48] font-semibold text-white"
+            className="h-13 cursor-pointer rounded-[10px] bg-[#3e9b48] font-semibold text-white"
           >
             포기하기 · {formatWon(worry.price)}원 절약
           </button>
           <button
             type="button"
             onClick={onPurchase}
-            className="h-13 rounded-[10px] border border-[#dedede] bg-white font-semibold text-black"
+            className="h-13 cursor-pointer rounded-[10px] border border-[#dedede] bg-white font-semibold text-black"
           >
             구매하기
           </button>

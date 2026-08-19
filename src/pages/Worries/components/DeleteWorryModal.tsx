@@ -44,14 +44,14 @@ export function DeleteWorryModal({
           <button
             type="button"
             onClick={onCancel}
-            className="h-12 flex-1 rounded-[10px] border border-[#dedede] bg-white font-semibold text-black"
+            className="h-12 flex-1 cursor-pointer rounded-[10px] border border-[#dedede] bg-white font-semibold text-black"
           >
             취소
           </button>
           <button
             type="button"
             onClick={onConfirmDelete}
-            className="h-12 flex-1 rounded-[10px] bg-[#e05b4e] font-semibold text-white"
+            className="h-12 flex-1 cursor-pointer rounded-[10px] bg-[#e05b4e] font-semibold text-white"
           >
             삭제
           </button>

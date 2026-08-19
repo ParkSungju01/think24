@@ -2,6 +2,7 @@ import { X } from 'lucide-react';
 import { useCountdown } from '../../../hooks/useCountdown';
 import { formatRemainingTime, formatWon } from '../../../utils/format';
 import type { WorryListView } from '../../../types/worriesList';
+import { WorryThumbnail } from '../../../components/WorryThumbnail';
 
 interface WorryCardProps {
   view: WorryListView;
@@ -88,18 +89,11 @@ export function WorryCard({
       className={`w-full rounded-[14px] border bg-white p-4 ${cardBorderClassName}`}
     >
       <div className="flex flex-wrap items-center gap-2">
-        {worry.thumbnailUrl ? (
-          <img
-            src={worry.thumbnailUrl}
-            alt={worry.name}
-            className="h-13 w-13 shrink-0 rounded-[10px] object-cover"
-          />
-        ) : (
-          <div
-            className="h-13 w-13 shrink-0 rounded-[10px] bg-[#f5f5f5]"
-            aria-hidden="true"
-          />
-        )}
+        <WorryThumbnail
+          src={worry.thumbnailUrl}
+          alt={worry.name}
+          sizeClassName="h-13 w-13 rounded-[10px]"
+        />
         <span className="h-5 rounded-full bg-[#eef2ea] px-2 text-[13px] text-[#4d5d47]">
           {worry.category}
         </span>
@@ -146,7 +140,7 @@ export function WorryCard({
             <button
               type="button"
               onClick={() => onPause(worry.id)}
-              className="flex-1 rounded-[10px] border border-[#dedede] bg-white text-black"
+              className="flex-1 cursor-pointer rounded-[10px] border border-[#dedede] bg-white text-black"
             >
               일시정지
             </button>
@@ -154,7 +148,7 @@ export function WorryCard({
               type="button"
               onClick={() => onDelete(worry.id)}
               aria-label="삭제"
-              className="w-12 rounded-[10px] border border-[#dedede] bg-white text-black"
+              className="w-12 cursor-pointer rounded-[10px] border border-[#dedede] bg-white text-black"
             >
               <X className="mx-auto h-4 w-4" />
             </button>
@@ -165,7 +159,7 @@ export function WorryCard({
             <button
               type="button"
               onClick={() => onResume(worry.id)}
-              className="flex-1 rounded-[10px] border border-[#dedede] bg-white text-black"
+              className="flex-1 cursor-pointer rounded-[10px] border border-[#dedede] bg-white text-black"
             >
               타이머 재개
             </button>
@@ -173,7 +167,7 @@ export function WorryCard({
               type="button"
               onClick={() => onDelete(worry.id)}
               aria-label="삭제"
-              className="w-12 rounded-[10px] border border-[#dedede] bg-white text-black"
+              className="w-12 cursor-pointer rounded-[10px] border border-[#dedede] bg-white text-black"
             >
               <X className="mx-auto h-4 w-4" />
             </button>
@@ -183,7 +177,7 @@ export function WorryCard({
           <button
             type="button"
             onClick={() => onDecide(worry.id)}
-            className="flex-1 rounded-[10px] bg-[#3e9b48] font-semibold text-white"
+            className="flex-1 cursor-pointer rounded-[10px] bg-[#3e9b48] font-semibold text-white"
           >
             최종 결정하기
           </button>

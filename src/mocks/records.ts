@@ -23,7 +23,7 @@ export interface RecordsMockData {
 
 export const recordsMockByPeriod: Record<RecordPeriod, RecordsMockData> = {
   thisMonth: {
-    savingsAmount: 111_111,
+    savingsAmount: 50_000,
     savingsAmountDiff: 11_000,
     registeredCount: 10,
     abandonedCount: 8,
@@ -44,7 +44,7 @@ export const recordsMockByPeriod: Record<RecordPeriod, RecordsMockData> = {
     ],
   },
   last3Months: {
-    savingsAmount: 552_000,
+    savingsAmount: 332_000,
     savingsAmountDiff: 48_000,
     registeredCount: 28,
     abandonedCount: 20,
@@ -64,7 +64,7 @@ export const recordsMockByPeriod: Record<RecordPeriod, RecordsMockData> = {
     ],
   },
   lastYear: {
-    savingsAmount: 1_850_000,
+    savingsAmount: 1_540_000,
     savingsAmountDiff: 150_000,
     registeredCount: 96,
     abandonedCount: 70,
@@ -95,7 +95,7 @@ export const recordsMockByPeriod: Record<RecordPeriod, RecordsMockData> = {
     ],
   },
   all: {
-    savingsAmount: 3_260_000,
+    savingsAmount: 3_340_000,
     savingsAmountDiff: 210_000,
     registeredCount: 214,
     abandonedCount: 158,

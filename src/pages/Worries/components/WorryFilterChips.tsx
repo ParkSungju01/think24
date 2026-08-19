@@ -32,7 +32,7 @@ export function WorryFilterChips({
             key={option.value}
             type="button"
             onClick={() => onChange(option.value)}
-            className={`h-7.5 rounded-full px-3 text-[13px] whitespace-nowrap ${
+            className={`h-7.5 cursor-pointer rounded-full px-3 text-[13px] whitespace-nowrap ${
               isSelected
                 ? 'bg-[#3e9b48] font-semibold text-white'
                 : 'border border-[#dedede] bg-white text-black'

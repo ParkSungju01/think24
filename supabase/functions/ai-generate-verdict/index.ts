@@ -2,8 +2,10 @@
 //
 // 상품 정보 + 사용자가 5개 질문에 답한 내용을 종합해 "필요한 소비 / 충동구매" 참고용 판정과
 // 3개 지표(필요성/충동성/가격 적정성)를 OpenAI(gpt-4o-mini)로 생성해 반환한다.
+// 이슈 #48(docs/plans/local-only-migration.md): 로그인 인증 체크는 제거하고, 비로그인 상태의
+// 무제한 호출을 막기 위해 IP 기준 rate limit(10분/5회)으로 대체했다.
 import { corsHeaders, jsonResponse } from '../_shared/cors.ts';
-import { requireAuthenticatedUser } from '../_shared/auth.ts';
+import { checkRateLimit, getClientIp } from '../_shared/rateLimit.ts';
 
 interface AnswerInput {
   question: string;
@@ -49,9 +51,13 @@ Deno.serve(async (req: Request) => {
     return jsonResponse({ error: '허용되지 않은 메서드입니다.' }, 405);
   }
 
-  const authResult = await requireAuthenticatedUser(req);
-  if ('errorResponse' in authResult) {
-    return authResult.errorResponse;
+  const ip = getClientIp(req);
+  const rateLimitResult = checkRateLimit(ip);
+  if (!rateLimitResult.allowed) {
+    return jsonResponse(
+      { error: '요청이 너무 많습니다. 잠시 후 다시 시도해주세요.' },
+      429,
+    );
   }
 
   let body: RequestBody;
