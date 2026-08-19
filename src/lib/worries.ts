@@ -14,6 +14,9 @@ export interface WorryRecord {
   createdAt: Date;
   decidedAt: Date | null;
   deadlineAt: Date;
+  // docs/plans/worries-list.md 데이터/타입 설계: createWorry가 insert 시점에 이미 채워두는
+  // 컬럼이지만 기존 select 목록엔 없어 누락돼 있었다. AI 배지(결정 시트/카드) 표시에 필요.
+  aiVerdict: AiVerdict | null;
 }
 
 interface WorryRow {
@@ -26,7 +29,11 @@ interface WorryRow {
   created_at: string;
   decided_at: string | null;
   deadline_at: string;
+  ai_verdict: AiVerdict | null;
 }
+
+const WORRY_SELECT_COLUMNS =
+  'id, name, price, category, thumbnail_url, status, created_at, decided_at, deadline_at, ai_verdict';
 
 function toWorryRecord(row: WorryRow): WorryRecord {
   return {
@@ -39,6 +46,7 @@ function toWorryRecord(row: WorryRow): WorryRecord {
     createdAt: new Date(row.created_at),
     decidedAt: row.decided_at ? new Date(row.decided_at) : null,
     deadlineAt: new Date(row.deadline_at),
+    aiVerdict: row.ai_verdict ?? null,
   };
 }
 
@@ -55,12 +63,31 @@ export async function fetchRecentWorries(
   const start = sinceDate.toISOString();
   const { data, error } = await supabase
     .from('worries')
-    .select(
-      'id, name, price, category, thumbnail_url, status, created_at, decided_at, deadline_at',
-    )
+    .select(WORRY_SELECT_COLUMNS)
     .eq('user_id', userId)
     .or(`created_at.gte.${start},decided_at.gte.${start}`)
     .order('created_at', { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  return (data ?? []).map(toWorryRecord);
+}
+
+/**
+ * 로그인한 유저의 "진행 중"(status === 'ongoing') worry를 기간 제한 없이 전부 조회한다.
+ * docs/plans/worries-list.md: 고민 목록 화면은 결정 대기/일시정지까지 파생 상태로 다시 나누므로
+ * status 필터만 걸고, deadline_at 오름차순(초기 로드 순서)으로 정렬해둔다 — 화면에서는 어차피
+ * "남은 시간순"으로 다시 정렬하지만 최초 응답 순서를 명확히 하기 위함.
+ */
+export async function fetchOngoingWorries(userId: string): Promise<WorryRecord[]> {
+  const { data, error } = await supabase
+    .from('worries')
+    .select(WORRY_SELECT_COLUMNS)
+    .eq('user_id', userId)
+    .eq('status', 'ongoing')
+    .order('deadline_at', { ascending: true });
 
   if (error) {
     throw error;
@@ -108,9 +135,7 @@ export async function createWorry(
       ai_answers: input.aiAnswers,
       ai_verdict: input.aiVerdict,
     })
-    .select(
-      'id, name, price, category, thumbnail_url, status, created_at, decided_at, deadline_at',
-    )
+    .select(WORRY_SELECT_COLUMNS)
     .single();
 
   if (error || !data) {
