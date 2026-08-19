@@ -1,5 +1,4 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
 import { fetchOngoingWorries, type WorryRecord } from '../../lib/worries';
 import {
   countWorryListViews,
@@ -18,15 +17,14 @@ import type {
 const DEFAULT_VISIBLE_COUNT = 2;
 
 /**
- * docs/plans/worries-list.md "화면 구성 > 화면 1" 상태/데이터 설계 그대로. 데이터 로드(실제
- * Supabase 조회 1회) + 로컬 오버레이 3종(일시정지/재개 표시용 마감/확정) + 삭제 오버레이 +
+ * docs/plans/worries-list.md "화면 구성 > 화면 1" 상태/데이터 설계 그대로. 데이터 로드(로컬
+ * localStorage 조회 1회) + 로컬 오버레이 3종(일시정지/재개 표시용 마감/확정) + 삭제 오버레이 +
  * 필터/더보기/모달 타깃 상태 + 파생값 계산까지 한 훅에 모아 WorriesPage를 얇게 유지한다.
  *
- * ADR-0004: 확정(구매/포기)·일시정지·삭제는 전부 이 훅의 로컬 useState로만 존재하고 실제 DB에는
+ * ADR-0004: 확정(구매/포기)·일시정지·삭제는 전부 이 훅의 로컬 useState로만 존재하고 실제 저장소에는
  * 쓰지 않는다 — 새로고침하면 초기화된다.
  */
 export function useWorriesListData() {
-  const { user } = useAuth();
   const [worries, setWorries] = useState<WorryRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -54,15 +52,13 @@ export function useWorriesListData() {
   const now = useNowTick();
 
   useEffect(() => {
-    if (!user) return;
-
     let cancelled = false;
 
     (async () => {
       setIsLoading(true);
       setError(null);
       try {
-        const result = await fetchOngoingWorries(user.id);
+        const result = await fetchOngoingWorries();
         if (cancelled) return;
         setWorries(result);
       } catch (err) {
@@ -78,7 +74,7 @@ export function useWorriesListData() {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, []);
 
   const views = useMemo(
     () =>

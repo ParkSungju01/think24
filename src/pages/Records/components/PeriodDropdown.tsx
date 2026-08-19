@@ -36,7 +36,7 @@ export function PeriodDropdown({ value, onChange }: PeriodDropdownProps) {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className="flex h-7.5 min-w-22.25 items-center justify-between gap-2 rounded-md border-[0.5px] border-[#b3b3b3] bg-white px-3 text-[13px] font-medium text-black"
+        className="flex h-7.5 min-w-22.25 cursor-pointer items-center justify-between gap-2 rounded-md border-[0.5px] border-[#b3b3b3] bg-white px-3 text-[13px] font-medium text-black"
       >
         <span className="whitespace-nowrap">{selectedLabel}</span>
         <ChevronDown
@@ -60,7 +60,7 @@ export function PeriodDropdown({ value, onChange }: PeriodDropdownProps) {
                   onChange(option.value);
                   setIsOpen(false);
                 }}
-                className={`block w-full px-4 py-2.5 text-left text-[15px] whitespace-nowrap ${
+                className={`block w-full cursor-pointer px-4 py-2.5 text-left text-[15px] whitespace-nowrap ${
                   value === option.value
                     ? 'bg-[#e9f6e4] text-[#3e9b48]'
                     : 'text-black hover:bg-[#f7f7f7]'

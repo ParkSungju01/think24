@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Toast } from '../../components/Toast';
-import { useAuth } from '../../contexts/AuthContext';
 import { ROUTES } from '../../routes/paths';
 import { AiLoadingScreen } from './components/AiLoadingScreen';
 import { ProductInfoStep } from './components/ProductInfoStep';
@@ -13,13 +12,12 @@ import { useNewWorryFlow } from './useNewWorryFlow';
 
 /**
  * docs/plans/new-worry.md "화면 구성": 스텝 1~6이 전부 이 라우트(`/worries/new`) 안에서
- * 컴포넌트 상태로 전환되는 단일 위저드. Supabase 쓰기(이미지 업로드 + insert)는 스텝 5
- * "24시간 고민 시작하기"를 눌렀을 때 useNewWorryFlow 내부에서 단 한 번만 발생한다.
+ * 컴포넌트 상태로 전환되는 단일 위저드. 로컬 쓰기(썸네일 리사이즈 + localStorage insert)는
+ * 스텝 5 "24시간 고민 시작하기"를 눌렀을 때 useNewWorryFlow 내부에서 단 한 번만 발생한다.
  */
 export function NewWorryPage() {
-  const { user } = useAuth();
   const navigate = useNavigate();
-  const flow = useNewWorryFlow(user?.id);
+  const flow = useNewWorryFlow();
 
   // 새 에러가 들어올 때만 토스트를 다시 띄운다("렌더링 중 상태 조정" 패턴 — 이전 값과
   // 비교해 바뀐 시점에만 setState. useEffect 안에서 setState하면 리액트 컴파일러/lint가

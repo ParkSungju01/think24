@@ -80,7 +80,7 @@ export function VerdictResultStep({
           type="button"
           onClick={onStartTimer}
           disabled={isSubmitting}
-          className="flex h-12.5 w-full items-center justify-center gap-2 rounded-[5px] bg-[#3e9b48] text-[16px] font-semibold text-white"
+          className="flex h-12.5 w-full cursor-pointer items-center justify-center gap-2 rounded-[5px] bg-[#3e9b48] text-[16px] font-semibold text-white disabled:cursor-not-allowed"
         >
           {isSubmitting && <Spinner className="h-4 w-4 border-white" />}
           24시간 고민 시작하기
@@ -89,7 +89,7 @@ export function VerdictResultStep({
           type="button"
           onClick={onGoHome}
           disabled={isSubmitting}
-          className="h-12.5 w-full rounded-[5px] border border-[#a9a9a9] bg-white text-[16px] font-semibold text-[#666]"
+          className="h-12.5 w-full cursor-pointer rounded-[5px] border border-[#a9a9a9] bg-white text-[16px] font-semibold text-[#666] disabled:cursor-not-allowed"
         >
           홈으로 돌아가기
         </button>

@@ -1,60 +1,69 @@
-import { supabase } from './supabase';
+// docs/plans/local-only-migration.md "4. 상품 썸네일 로컬 저장": Supabase Storage 업로드 대신
+// 리사이즈 후 base64 data URL을 반환하는 순수 프론트 로직으로 재작성했다. object URL은 현재
+// 세션의 메모리에만 유효해 새로고침하면 깨지므로, localStorage에 저장해도 재방문 시 유지되는
+// data URL을 선택했다.
 
-const BUCKET = 'worry-thumbnails';
-// Supabase Storage 오브젝트 키 문자 제한과 무관하게 항상 안전한 확장자만 남긴다.
-const SAFE_EXTENSION_PATTERN = /^[a-z0-9]{1,10}$/;
-const MIME_TO_EXTENSION: Record<string, string> = {
-  'image/jpeg': 'jpg',
-  'image/png': 'png',
-  'image/gif': 'gif',
-  'image/webp': 'webp',
-  'image/heic': 'heic',
-  'image/heif': 'heif',
-};
+const MAX_DIMENSION = 480; // px, 긴 쪽 기준
+const JPEG_QUALITY = 0.72;
 
-/**
- * 원본 파일명을 그대로 오브젝트 키에 쓰면 한글/공백/괄호 등이 섞인 실제 파일명(예:
- * "테스트 이미지 (1).png")에서 Supabase Storage가 "Invalid key"(400)로 업로드를 거부한다
- * (실사용 중 발견 — 재현 완료). 확장자만 뽑아 안전한 문자만 남기고, 나머지는 버린다.
- */
-function extractSafeExtension(file: File): string {
-  const dotIndex = file.name.lastIndexOf('.');
-  const rawExt =
-    dotIndex >= 0 ? file.name.slice(dotIndex + 1).toLowerCase() : '';
-
-  if (SAFE_EXTENSION_PATTERN.test(rawExt)) {
-    return rawExt;
-  }
-
-  return MIME_TO_EXTENSION[file.type] ?? 'bin';
-}
-
-/**
- * docs/plans/new-worry.md "데이터 모델 변경 > 2. Storage 버킷 신설": 상품 이미지를
- * `worry-thumbnails` 버킷의 `{user_id}/{timestamp}-{랜덤id}.{확장자}` 경로에 업로드하고
- * 공개 URL을 반환한다. 원본 파일명은 오브젝트 키에 쓰지 않는다(위 함수 설명 참고 — 안전한
- * 확장자만 뽑아 쓰고 나머지는 타임스탬프+랜덤 id로 대체해 문자 인코딩 문제를 원천 차단한다).
- * RLS가 `auth.uid()`와 폴더명(`user_id`) 일치를 요구하므로 userId는 반드시 로그인한
- * 본인 id여야 한다.
- */
 export async function uploadWorryThumbnail(
-  userId: string,
   file: File,
 ): Promise<{ url: string | null; error: string | null }> {
-  const extension = extractSafeExtension(file);
-  const path = `${userId}/${Date.now()}-${crypto.randomUUID()}.${extension}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from(BUCKET)
-    .upload(path, file);
-
-  if (uploadError) {
-    return { url: null, error: uploadError.message };
+  try {
+    const dataUrl = await resizeToDataUrl(file, MAX_DIMENSION, JPEG_QUALITY);
+    return { url: dataUrl, error: null };
+  } catch (err) {
+    console.error('썸네일 리사이즈 실패:', err);
+    return { url: null, error: '이미지 처리에 실패했습니다.' };
   }
+}
 
-  const {
-    data: { publicUrl },
-  } = supabase.storage.from(BUCKET).getPublicUrl(path);
+function readFileAsDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        resolve(reader.result);
+      } else {
+        reject(new Error('파일을 읽지 못했습니다.'));
+      }
+    };
+    reader.onerror = () => reject(reader.error ?? new Error('파일을 읽지 못했습니다.'));
+    reader.readAsDataURL(file);
+  });
+}
 
-  return { url: publicUrl, error: null };
+function loadImage(src: string): Promise<HTMLImageElement> {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error('이미지를 불러오지 못했습니다.'));
+    image.src = src;
+  });
+}
+
+async function resizeToDataUrl(
+  file: File,
+  maxDimension: number,
+  quality: number,
+): Promise<string> {
+  const originalDataUrl = await readFileAsDataUrl(file);
+  const image = await loadImage(originalDataUrl);
+
+  const longestSide = Math.max(image.width, image.height);
+  const scale = longestSide > maxDimension ? maxDimension / longestSide : 1;
+  const targetWidth = Math.round(image.width * scale);
+  const targetHeight = Math.round(image.height * scale);
+
+  const canvas = document.createElement('canvas');
+  canvas.width = targetWidth;
+  canvas.height = targetHeight;
+
+  const context = canvas.getContext('2d');
+  if (!context) {
+    throw new Error('canvas context를 생성하지 못했습니다.');
+  }
+  context.drawImage(image, 0, 0, targetWidth, targetHeight);
+
+  return canvas.toDataURL('image/jpeg', quality);
 }

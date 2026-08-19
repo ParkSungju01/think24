@@ -415,7 +415,7 @@ enabled = true
 
 [functions.ai-generate-questions]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/ai-generate-questions/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx
@@ -426,7 +426,7 @@ entrypoint = "./functions/ai-generate-questions/index.ts"
 
 [functions.ai-generate-verdict]
 enabled = true
-verify_jwt = true
+verify_jwt = false
 import_map = "./functions/ai-generate-verdict/deno.json"
 # Uncomment to specify a custom file path to the entrypoint.
 # Supported file extensions are: .ts, .js, .mjs, .jsx, .tsx

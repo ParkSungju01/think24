@@ -31,7 +31,7 @@ export function CategoryDropdown({ value, onChange }: CategoryDropdownProps) {
         onClick={() => setIsOpen((prev) => !prev)}
         aria-haspopup="listbox"
         aria-expanded={isOpen}
-        className={`flex h-11 w-full items-center justify-between rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] outline-none ${
+        className={`flex h-11 w-full cursor-pointer items-center justify-between rounded-[7px] border border-[#757575] bg-white px-4 text-[15px] outline-none ${
           value ? 'text-black' : 'text-[#a9a9a9]'
         }`}
       >
@@ -57,7 +57,7 @@ export function CategoryDropdown({ value, onChange }: CategoryDropdownProps) {
                   onChange(category);
                   setIsOpen(false);
                 }}
-                className={`block w-full px-4 py-2.5 text-left text-[15px] ${
+                className={`block w-full cursor-pointer px-4 py-2.5 text-left text-[15px] ${
                   value === category
                     ? 'bg-[#e9f6e4] text-[#3e9b48]'
                     : 'text-black hover:bg-[#f7f7f7]'

@@ -63,7 +63,7 @@ export function AiLoadingScreen({
           <button
             type="button"
             onClick={onRetry}
-            className="mt-6 flex items-center gap-2 rounded-[9px] bg-[#e9f6e4] px-6 py-3 text-[14px] font-medium text-[#4fb75b]"
+            className="mt-6 flex cursor-pointer items-center gap-2 rounded-[9px] bg-[#e9f6e4] px-6 py-3 text-[14px] font-medium text-[#4fb75b]"
           >
             <RefreshCw className="h-4 w-4" aria-hidden="true" />
             다시 시도

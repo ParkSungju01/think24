@@ -2,6 +2,7 @@ import { useRef, useState, type PointerEvent as ReactPointerEvent } from 'react'
 import { Trash2 } from 'lucide-react';
 import type { NotificationItem } from '../../../types/notifications';
 import { formatRelativeTime } from '../../../utils/format';
+import { WorryThumbnail } from '../../../components/WorryThumbnail';
 
 interface NotificationSwipeableListItemProps {
   notification: NotificationItem;
@@ -119,7 +120,7 @@ export function NotificationSwipeableListItem({
         type="button"
         aria-label="알림 삭제"
         onClick={onRequestDelete}
-        className="absolute right-0 top-0 flex h-full w-10 items-center justify-center bg-[#ec2d30]"
+        className="absolute right-0 top-0 flex h-full w-10 cursor-pointer items-center justify-center bg-[#ec2d30]"
       >
         <Trash2 className="h-6.5 w-6.5 text-white" />
       </button>
@@ -146,18 +147,11 @@ export function NotificationSwipeableListItem({
           }`}
           aria-hidden="true"
         />
-        {thumbnailUrl ? (
-          <img
-            src={thumbnailUrl}
-            alt=""
-            className="h-10 w-10 shrink-0 rounded-[10px] object-cover"
-          />
-        ) : (
-          <div
-            className="h-10 w-10 shrink-0 rounded-[10px] bg-[#f5f5f5]"
-            aria-hidden="true"
-          />
-        )}
+        <WorryThumbnail
+          src={thumbnailUrl}
+          alt=""
+          sizeClassName="h-10 w-10 rounded-[10px]"
+        />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex items-center justify-between gap-2">
             <p className="min-w-0 truncate text-[11px] font-semibold text-black">

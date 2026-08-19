@@ -21,7 +21,7 @@ export function NotificationOverflowMenu({
         type="button"
         role="menuitem"
         onClick={onMarkAllAsRead}
-        className="text-left text-[13px] text-black"
+        className="cursor-pointer text-left text-[13px] text-black"
       >
         모두 읽음으로 표시
       </button>
@@ -29,7 +29,7 @@ export function NotificationOverflowMenu({
         type="button"
         role="menuitem"
         onClick={onRequestDeleteAll}
-        className="text-left text-[13px] text-[#ec2d30]"
+        className="cursor-pointer text-left text-[13px] text-[#ec2d30]"
       >
         알림 전체 삭제
       </button>

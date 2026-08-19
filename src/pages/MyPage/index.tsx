@@ -1,36 +1,18 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, type FormEvent } from 'react';
 import profileImg from '../../assets/profile.svg';
-import { ConfirmModal } from '../../components/ConfirmModal';
 import { Toast } from '../../components/Toast';
-import { useAuth } from '../../contexts/AuthContext';
-import { ROUTES } from '../../routes/paths';
+import { useNickname } from '../../contexts/NicknameContext';
 import { getNicknameError } from '../../utils/nicknameValidation';
 
 type ToastState = { message: string; tone: 'success' | 'error' } | null;
 
 export function MyPage() {
-  const { user, nickname, isNicknameLoading, updateNickname, signOut } =
-    useAuth();
-  const navigate = useNavigate();
+  const { nickname, updateNickname } = useNickname();
 
-  const [nicknameInput, setNicknameInput] = useState('');
-  const hasInitializedRef = useRef(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  // 닉네임은 이제 NicknameContext가 동기적으로 항상 보관하므로, 로딩 종료를 기다리는
+  // useEffect+ref 패턴 없이 useState 초기값으로 바로 채울 수 있다.
+  const [nicknameInput, setNicknameInput] = useState(nickname);
   const [toast, setToast] = useState<ToastState>(null);
-  // 이슈 #27(모바일 프로필): 데스크톱은 로그아웃 버튼이 Sidebar에 있지만, 모바일은 이 페이지
-  // 안에 별도 "로그아웃" 텍스트 버튼이 있어 확인 모달 오픈 상태가 이 컴포넌트에 추가로 필요하다.
-  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
-  // 닉네임은 AuthContext에서 비동기로 조회되므로, 로드가 끝난 시점에 딱 한 번만 입력창 초기값을
-  // 채운다(이후 context의 nickname이 바뀌어도 — 예: 저장 성공 시 자기 자신이 갱신한 값과 같으므로
-  // 문제 없지만, 사용자가 입력 중인 값을 덮어쓰지 않기 위해 최초 1회만 반영).
-  useEffect(() => {
-    if (hasInitializedRef.current || isNicknameLoading) return;
-    const emailPrefix = user?.email?.split('@')[0] ?? '';
-    setNicknameInput(nickname ?? emailPrefix);
-    hasInitializedRef.current = true;
-  }, [isNicknameLoading, nickname, user]);
 
   // docs/plans/mypage.md 닉네임 유효성 상태 표: 빈 값은 에러 아님(회색 테두리), 형식/금칙어
   // 위반만 에러(빨간 테두리) — getNicknameError가 빈 문자열에 null을 반환하므로 그대로 매핑된다.
@@ -44,33 +26,20 @@ export function MyPage() {
     ? 'bg-[#e9f6e4] text-[#4fb75b]'
     : 'bg-[#e7eae4] text-[#504f4f]';
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!canSubmit || isSubmitting) return;
+    if (!canSubmit) return;
 
-    setIsSubmitting(true);
-    const { error } = await updateNickname(nicknameInput);
-    setIsSubmitting(false);
-
-    setToast(
-      error
-        ? { message: '닉네임 저장에 실패했습니다.', tone: 'error' }
-        : { message: '닉네임이 저장되었습니다.', tone: 'success' },
-    );
-  };
-
-  // 이슈 #27: Sidebar.tsx의 handleLogout과 동일 패턴(모달 닫기 → signOut → 로그인으로 이동).
-  const handleLogout = async () => {
-    setIsLogoutModalOpen(false);
-    await signOut();
-    navigate(ROUTES.login);
+    // 로컬 쓰기는 실패하지 않으므로(updateNickname이 동기) 항상 성공 토스트만 보여준다.
+    updateNickname(nicknameInput);
+    setToast({ message: '닉네임이 저장되었습니다.', tone: 'success' });
   };
 
   return (
     <>
-      {/* 이슈 #39: 모바일 레이아웃(피그마 "프로필" 섹션 264:890~264:1443 — 프로필 수정 카드 +
-          로그아웃 텍스트 버튼. docs/plans/mobile-profile.md 실측 스펙)만 남기고 데스크톱
-          레이아웃은 삭제했다. */}
+      {/* 이슈 #39: 모바일 레이아웃(피그마 "프로필" 섹션 264:890~264:1443 — 프로필 수정 카드.
+          docs/plans/mobile-profile.md 실측 스펙)만 남기고 데스크톱 레이아웃은 삭제했다.
+          이슈 #48: 계정 자체가 사라져 로그아웃 텍스트 버튼/확인 모달은 완전히 제거했다. */}
       <div className="flex flex-col px-6 pt-8 pb-24">
         <h1 className="text-[25px] font-semibold text-black">프로필 수정</h1>
 
@@ -111,41 +80,23 @@ export function MyPage() {
             )}
             <button
               type="submit"
-              disabled={!canSubmit || isSubmitting}
+              disabled={!canSubmit}
               className={`mx-auto mt-8 h-8.25 w-46.75 rounded-[9px] text-[15px] font-medium cursor-pointer transition-colors ${submitColorClassName} ${
-                !canSubmit || isSubmitting ? 'cursor-not-allowed' : ''
+                !canSubmit ? 'cursor-not-allowed' : ''
               }`}
             >
               수정하기
             </button>
           </form>
         </div>
-
-        {/* "로그아웃" 텍스트 버튼(264:1356) — 클릭 시 확인 모달 오픈(264:1370 스펙).
-            시각적 텍스트는 46×16으로 작지만 py-3로 터치 영역을 넉넉히 확보(확인 필요 #2 제안 승계). */}
-        <button
-          type="button"
-          onClick={() => setIsLogoutModalOpen(true)}
-          className="mx-auto mt-16.25 px-4 py-3 text-[12px] font-medium text-[#899086] cursor-pointer"
-        >
-          로그아웃
-        </button>
       </div>
 
-      {/* 닉네임 저장 토스트 + 로그아웃 확인 모달 — 위 레이아웃 div와 같은 최상위 형제로 둔다. */}
+      {/* 닉네임 저장 토스트 — 위 레이아웃 div와 같은 최상위 형제로 둔다. */}
       {toast && (
         <Toast
           message={toast.message}
           tone={toast.tone}
           onDismiss={() => setToast(null)}
-        />
-      )}
-
-      {isLogoutModalOpen && (
-        <ConfirmModal
-          message="로그아웃 하시겠습니까?"
-          onConfirm={handleLogout}
-          onCancel={() => setIsLogoutModalOpen(false)}
         />
       )}
     </>

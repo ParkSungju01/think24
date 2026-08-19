@@ -82,7 +82,7 @@ export function ProductInfoStep({
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="relative flex aspect-325/611 w-full flex-col items-center justify-center gap-3 overflow-hidden rounded-[14px] bg-[#efefef]"
+            className="relative flex aspect-325/611 w-full cursor-pointer flex-col items-center justify-center gap-3 overflow-hidden rounded-[14px] bg-[#efefef]"
           >
             {previewUrl ? (
               <img
@@ -107,7 +107,7 @@ export function ProductInfoStep({
               type="button"
               onClick={() => onChange({ imageFile: null })}
               aria-label="선택한 이미지 제거"
-              className="mt-2 flex items-center gap-1 text-[13px] text-[#899086]"
+              className="mt-2 flex cursor-pointer items-center gap-1 text-[13px] text-[#899086]"
             >
               <X className="h-4 w-4" aria-hidden="true" />
               사진 제거
@@ -202,7 +202,7 @@ export function ProductInfoStep({
             disabled={!canSubmit}
             className={`mt-4 h-11 w-full rounded-[9px] text-[15px] font-medium transition-colors ${
               canSubmit
-                ? 'bg-[#e9f6e4] text-[#4fb75b]'
+                ? 'cursor-pointer bg-[#e9f6e4] text-[#4fb75b]'
                 : 'cursor-not-allowed bg-[#e7eae4] text-[#a9a9a9]'
             }`}
           >
