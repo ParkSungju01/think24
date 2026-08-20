@@ -2,24 +2,19 @@ import type { WorryRecord } from './worries';
 import type {
   DeletedWorryIds,
   OutcomeOverlay,
-  PausedOverlay,
   WorryListView,
 } from '../types/worriesList';
 
 /**
- * docs/plans/worries-list.md "파생 로직" 그대로. status==='ongoing'인 실제 row들에
- * 로컬 오버레이(일시정지/확정/삭제/재개 표시용 마감)를 얹어 화면 표시용 파생 상태를 계산한다.
+ * docs/plans/worries-list.md "파생 로직" 기반. status==='ongoing'인 실제 row들에 로컬
+ * 오버레이(확정/삭제)를 얹어 화면 표시용 파생 상태를 계산한다.
  *
- * 계획서의 제안 시그니처에는 없었지만, "재개" 시 표시용 새 마감(resumedDisplayDeadlines)이
- * 없으면 요약 카드의 "가장 급한 항목" 계산(전체 view를 훑어 displayRemainingSeconds가 가장
- * 작은 항목을 찾음)이 재개 직후 원본 deadlineAt 기준의 잘못된 값을 쓰게 된다. 파생값 전체가
- * 일관되게 정확한 잔여시간을 보도록 resumedDisplayDeadlines도 함께 받는다.
+ * 이슈 #51: 일시정지 기능 제거로 pausedOverlays/resumedDisplayDeadlines 파라미터와 'paused'
+ * 상태 분기를 삭제했다 — 이제 ongoing/pending 두 상태만 존재한다.
  */
 export function deriveWorryListViews(
   worries: WorryRecord[],
   now: Date,
-  pausedOverlays: Record<string, PausedOverlay>,
-  resumedDisplayDeadlines: Record<string, number>,
   outcomeOverlays: Record<string, OutcomeOverlay>,
   deletedIds: DeletedWorryIds,
 ): WorryListView[] {
@@ -28,24 +23,9 @@ export function deriveWorryListViews(
   return worries
     .filter((worry) => !outcomeOverlays[worry.id] && !deletedIds.has(worry.id))
     .map((worry): WorryListView => {
-      const pausedOverlay = pausedOverlays[worry.id];
-      if (pausedOverlay) {
-        return {
-          worry,
-          status: 'paused',
-          displayRemainingSeconds: pausedOverlay.remainingSecondsSnapshot,
-          displayProgressPercent: computeProgressPercent(
-            worry,
-            pausedOverlay.remainingSecondsSnapshot,
-          ),
-          countdownTargetMs: null,
-        };
-      }
+      const deadlineMs = worry.deadlineAt.getTime();
 
-      const countdownTargetMs =
-        resumedDisplayDeadlines[worry.id] ?? worry.deadlineAt.getTime();
-
-      if (nowMs >= countdownTargetMs) {
+      if (nowMs >= deadlineMs) {
         return {
           worry,
           status: 'pending',
@@ -57,7 +37,7 @@ export function deriveWorryListViews(
 
       const remainingSeconds = Math.max(
         0,
-        Math.ceil((countdownTargetMs - nowMs) / 1000),
+        Math.ceil((deadlineMs - nowMs) / 1000),
       );
 
       return {
@@ -65,7 +45,7 @@ export function deriveWorryListViews(
         status: 'ongoing',
         displayRemainingSeconds: remainingSeconds,
         displayProgressPercent: computeProgressPercent(worry, remainingSeconds),
-        countdownTargetMs,
+        countdownTargetMs: deadlineMs,
       };
     });
 }
@@ -85,7 +65,6 @@ function computeProgressPercent(
 export interface WorryListCounts {
   all: number;
   ongoing: number;
-  paused: number;
   pending: number;
 }
 
@@ -94,15 +73,14 @@ export function countWorryListViews(views: WorryListView[]): WorryListCounts {
   return {
     all: views.length,
     ongoing: views.filter((view) => view.status === 'ongoing').length,
-    paused: views.filter((view) => view.status === 'paused').length,
     pending: views.filter((view) => view.status === 'pending').length,
   };
 }
 
-/** all/ongoing/paused/pending 필터에 맞춰 views를 좁힌다. */
+/** all/ongoing/pending 필터에 맞춰 views를 좁힌다. */
 export function filterWorryListViews(
   views: WorryListView[],
-  filter: 'all' | 'ongoing' | 'paused' | 'pending',
+  filter: 'all' | 'ongoing' | 'pending',
 ): WorryListView[] {
   if (filter === 'all') return views;
   return views.filter((view) => view.status === filter);
