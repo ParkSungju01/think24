@@ -28,17 +28,13 @@ const DRAG_THRESHOLD = 8;
  * 레이아웃은 그대로 두고, 오른쪽에 빨강 삭제 버튼을 숨겨뒀다가 pointer 이벤트 기반
  * 스와이프(오→왼)로 노출한다. 새 제스처 라이브러리는 쓰지 않는다(계획서: 최소 의존성 우선).
  *
- * 마우스 폴백(오케스트레이터 확인): 터치 스와이프뿐 아니라 클릭만으로도 삭제 버튼을
- * 열고 닫을 수 있어야 한다. Pointer Events는 마우스/터치 모두에서 동일하게 발생하므로,
- * 이동량이 DRAG_THRESHOLD 미만인 "제자리 클릭/탭"을 아래처럼 분기 처리한다:
- *  - 이미 열려 있는 상태에서 제자리 클릭/탭 → 그냥 닫기(복구). 터치의 "왼→오 스와이프로
- *    복구"와 동일한 결과를 클릭으로도 낼 수 있게 한다.
- *  - 닫혀 있는 상태에서 제자리 클릭(마우스) → 삭제 버튼을 연다. 마우스는 실제 스와이프
- *    동작을 하기 어려우므로 클릭 자체가 스와이프의 대체 트리거가 된다(요청사항: "데스크톱
- *    브라우저에서 접근했을 때도 동작해야 함").
- *  - 닫혀 있는 상태에서 제자리 탭(터치) → 기존 스펙대로 markAsRead만 호출(이동 없음).
- * 실제로 이동량이 임계값 이상인 드래그가 발생하면 포인터 종류와 무관하게 방향에 따라
- * 열기/닫기를 결정한다(터치 스와이프 및 마우스 클릭-드래그 공통 경로).
+ * 클릭/탭 동작(포인터 종류 무관, 이슈 알림→고민 이동 기능 추가 시 재확정): 이동량이
+ * DRAG_THRESHOLD 미만인 "제자리 클릭/탭"은 마우스든 터치든 동일하게 처리한다.
+ *  - 이미 열려 있는 상태에서 제자리 클릭/탭 → 그냥 닫기(복구).
+ *  - 닫혀 있는 상태에서 제자리 클릭/탭 → onItemClick()(읽음 처리 + worryId 있으면 고민으로 이동).
+ * 삭제 버튼을 열려면(마우스 포함) 실제로 왼쪽으로 드래그해야 한다 — 이동량이 임계값 이상인
+ * 드래그가 발생하면 포인터 종류와 무관하게 방향에 따라 열기/닫기를 결정한다(터치 스와이프 및
+ * 마우스 클릭-드래그 공통 경로).
  */
 export function NotificationSwipeableListItem({
   notification,
@@ -53,11 +49,11 @@ export function NotificationSwipeableListItem({
   // isDragging은 렌더링(transform/transition 계산)에 쓰이므로 ref가 아니라 state로 둔다.
   // (ref.current를 렌더 중에 읽으면 react-hooks/refs 규칙 위반 — 렌더에는 항상 state만 사용)
   const [isDragging, setIsDragging] = useState(false);
-  // startX/pointerType은 이벤트 핸들러 안에서만 읽고 렌더링에는 쓰지 않으므로 ref로 보관해도 안전하다.
-  const pointerState = useRef<{ startX: number; pointerType: string } | null>(null);
+  // startX는 이벤트 핸들러 안에서만 읽고 렌더링에는 쓰지 않으므로 ref로 보관해도 안전하다.
+  const pointerState = useRef<{ startX: number } | null>(null);
 
   const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
-    pointerState.current = { startX: event.clientX, pointerType: event.pointerType };
+    pointerState.current = { startX: event.clientX };
     setIsDragging(false);
     event.currentTarget.setPointerCapture(event.pointerId);
   };
@@ -96,15 +92,10 @@ export function NotificationSwipeableListItem({
         else onClose();
       }
     } else {
-      // 이동량이 거의 없는 제자리 클릭/탭
+      // 이동량이 거의 없는 제자리 클릭/탭 — 포인터 종류와 무관하게 동일하게 처리한다.
       if (isOpen) {
-        // 열려 있을 때는 터치/마우스 공통으로 닫기(복구)
         onClose();
-      } else if (state.pointerType === 'mouse') {
-        // 마우스 폴백: 닫힌 상태에서의 클릭은 스와이프 대체 트리거로 삭제 버튼을 연다
-        onOpen();
       } else {
-        // 터치: 닫힌 상태에서의 탭은 기존 스펙대로 읽음 처리만
         onItemClick();
       }
     }

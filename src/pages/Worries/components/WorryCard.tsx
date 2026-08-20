@@ -10,6 +10,8 @@ interface WorryCardProps {
   onResume: (id: string) => void;
   onDelete: (id: string) => void;
   onDecide: (id: string) => void;
+  /** 알림 클릭으로 들어왔을 때 이 카드로 스크롤 + 잠깐 강조 표시할지 여부. */
+  highlighted?: boolean;
 }
 
 const AI_VERDICT_BADGE = {
@@ -33,6 +35,7 @@ export function WorryCard({
   onResume,
   onDelete,
   onDecide,
+  highlighted = false,
 }: WorryCardProps) {
   const { worry, status } = view;
 
@@ -84,9 +87,14 @@ export function WorryCard({
       ? 'bg-[#ccc]'
       : 'bg-[#3e9b48]';
 
+  const highlightRingClassName = highlighted
+    ? 'ring-2 ring-[#3e9b48] transition-shadow'
+    : '';
+
   return (
     <div
-      className={`w-full rounded-[14px] border bg-white p-4 ${cardBorderClassName}`}
+      id={`worry-card-${worry.id}`}
+      className={`w-full rounded-[14px] border bg-white p-4 ${cardBorderClassName} ${highlightRingClassName}`}
     >
       <div className="flex flex-wrap items-center gap-2">
         <WorryThumbnail

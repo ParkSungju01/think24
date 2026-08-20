@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { WorriesHeader } from './components/WorriesHeader';
 import { WorrySummaryCard } from './components/WorrySummaryCard';
 import { WorryFilterChips } from './components/WorryFilterChips';
@@ -8,6 +9,9 @@ import { WorryFilterEmptyNotice } from './components/WorryFilterEmptyNotice';
 import { WorryEmptyState } from './components/WorryEmptyState';
 import { DecisionSheet } from './components/DecisionSheet';
 import { DeleteWorryModal } from './components/DeleteWorryModal';
+import { PurchaseConfirmModal } from './components/PurchaseConfirmModal';
+import { Toast } from '../../components/Toast';
+import { formatWon } from '../../utils/format';
 import { useWorriesListData } from './useWorriesListData';
 
 // HomePage/RecordsPage와 동일한 페이지 배경/여백 컨벤션(docs/plans/worries-list.md 공통 전제).
@@ -36,7 +40,25 @@ export function WorriesPage() {
     closeDecisionSheet,
     decideOutcome,
     decisionSheetWorry,
+    openPurchaseConfirm,
+    closePurchaseConfirm,
+    purchaseConfirmWorry,
+    highlightedWorryId,
+    highlightError,
+    dismissHighlightError,
   } = useWorriesListData();
+
+  // "포기하기" 시 절약 금액을 알려주는 토스트. 구매 확정에는 별도 안내가 없으므로 이 페이지
+  // 로컬 상태로만 관리한다(훅까지 끌어올릴 필요 없음).
+  const [savedToast, setSavedToast] = useState<string | null>(null);
+
+  // 알림 클릭으로 들어와 강조 대상이 정해지면 해당 카드까지 스크롤한다.
+  useEffect(() => {
+    if (!highlightedWorryId) return;
+    document
+      .getElementById(`worry-card-${highlightedWorryId}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [highlightedWorryId]);
 
   if (isLoading) {
     return (
@@ -92,6 +114,7 @@ export function WorriesPage() {
                     onResume={resumeWorry}
                     onDelete={openDeleteModal}
                     onDecide={openDecisionSheet}
+                    highlighted={view.worry.id === highlightedWorryId}
                   />
                 ))}
                 {filter === 'paused' && <PausedHintBanner />}
@@ -107,9 +130,23 @@ export function WorriesPage() {
       {decisionSheetWorry && (
         <DecisionSheet
           worry={decisionSheetWorry}
-          onAbandon={() => decideOutcome(decisionSheetWorry.id, 'abandoned')}
-          onPurchase={() => decideOutcome(decisionSheetWorry.id, 'purchased')}
+          onAbandon={() => {
+            decideOutcome(decisionSheetWorry.id, 'abandoned');
+            setSavedToast(
+              `${formatWon(decisionSheetWorry.price)}원을 절약했어요!`,
+            );
+          }}
+          onPurchase={() => openPurchaseConfirm(decisionSheetWorry.id)}
           onDismiss={closeDecisionSheet}
+        />
+      )}
+
+      {purchaseConfirmWorry && (
+        <PurchaseConfirmModal
+          onCancel={closePurchaseConfirm}
+          onConfirmPurchase={() =>
+            decideOutcome(purchaseConfirmWorry.id, 'purchased')
+          }
         />
       )}
 
@@ -118,6 +155,22 @@ export function WorriesPage() {
           worryName={deleteModalWorry.name}
           onCancel={closeDeleteModal}
           onConfirmDelete={() => confirmDelete(deleteModalWorry.id)}
+        />
+      )}
+
+      {highlightError && (
+        <Toast
+          message={highlightError}
+          tone="error"
+          onDismiss={dismissHighlightError}
+        />
+      )}
+
+      {savedToast && (
+        <Toast
+          message={savedToast}
+          tone="success"
+          onDismiss={() => setSavedToast(null)}
         />
       )}
     </>
