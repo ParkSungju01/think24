@@ -10,7 +10,6 @@ interface WorryFilterChipsProps {
 const FILTER_OPTIONS: { value: WorryListFilter; label: string }[] = [
   { value: 'all', label: '전체' },
   { value: 'ongoing', label: '진행 중' },
-  { value: 'paused', label: '일시정지' },
   { value: 'pending', label: '결정 대기' },
 ];
 

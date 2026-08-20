@@ -28,12 +28,12 @@ export const MOCK_NOTIFICATIONS: NotificationItem[] = [
   },
   {
     id: 'mock-notification-3',
-    // 현재 시드에는 일시정지 예시가 없어(개발 편의용 세부 조정, docs/plans/local-only-migration.md
-    // 원안과 다름) 이 알림이 가리키던 고민이 실제로 존재하지 않는다. mock-notification-4와
-    // 동일하게 worryId를 null로 둬 존재하지 않는 id를 참조하지 않게 한다.
+    // 현재 시드에는 이 알림이 가리키던 고민이 실제로 존재하지 않는다(개발 편의용 세부 조정,
+    // docs/plans/local-only-migration.md 원안과 다름). mock-notification-4와 동일하게 worryId를
+    // null로 둬 존재하지 않는 id를 참조하지 않게 한다.
     worryId: null,
     worryName: '캡슐 커피 머신',
-    message: '고민을 일시정지했어요. 준비되면 다시 시작해보세요.',
+    message: '지금 결정하기로 구매를 확정했어요.',
     createdAt: new Date(now - 13 * HOUR_MS),
     isRead: true,
     thumbnailUrl: null,
