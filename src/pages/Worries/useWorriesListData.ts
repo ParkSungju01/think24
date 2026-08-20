@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { fetchOngoingWorries, type WorryRecord } from '../../lib/worries';
 import {
   countWorryListViews,
@@ -48,6 +49,21 @@ export function useWorriesListData() {
   const [deleteModalTarget, setDeleteModalTarget] = useState<string | null>(
     null,
   );
+  // 결정 시트의 "구매하기" → 바로 확정하지 않고 재확인 모달을 하나 더 띄운다. 결정 시트
+  // 자체는 열어둔 채로 유지해, 재확인 모달에서 "조금 더 고민하기"를 누르면 결정 시트로
+  // 돌아가 다시 포기/구매를 고를 수 있게 한다.
+  const [purchaseConfirmTarget, setPurchaseConfirmTarget] = useState<
+    string | null
+  >(null);
+
+  // 알림 클릭 → "?highlight=<worryId>"로 진입했을 때 해당 고민이 속한 필터로 전환하고
+  // 카드를 잠깐 강조 표시하기 위한 상태. searchParams는 처리 즉시 지워서(replace) 새로고침/뒤로가기
+  // 시 같은 처리가 반복되지 않게 한다.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [highlightedWorryId, setHighlightedWorryId] = useState<string | null>(
+    null,
+  );
+  const [highlightError, setHighlightError] = useState<string | null>(null);
 
   const now = useNowTick();
 
@@ -61,6 +77,48 @@ export function useWorriesListData() {
         const result = await fetchOngoingWorries();
         if (cancelled) return;
         setWorries(result);
+
+        // "?highlight=<id>" 처리는 데이터 로드가 끝난 직후(이 async 콜백 안) 한 번만 수행한다.
+        // 아직 컴포넌트 state로 반영되지 않은 방금 조회한 result를 직접 써서, 상태 갱신을 한 차례
+        // 더 기다렸다가 처리하는 별도 effect 없이 바로 처리한다(오버레이가 전부 비어있는 최초
+        // 로드 시점이라 deriveWorryListViews를 빈 오버레이로 호출해도 실제 상태와 동일하다).
+        const highlightId = searchParams.get('highlight');
+        if (highlightId) {
+          setSearchParams(
+            (prev) => {
+              const next = new URLSearchParams(prev);
+              next.delete('highlight');
+              return next;
+            },
+            { replace: true },
+          );
+
+          const loadedViews = deriveWorryListViews(
+            result,
+            new Date(),
+            {},
+            {},
+            {},
+            new Set(),
+          );
+          const target = loadedViews.find(
+            (view) => view.worry.id === highlightId,
+          );
+          if (!target) {
+            setHighlightError('이미 처리되었거나 삭제된 고민이에요.');
+          } else {
+            setFilterState(target.status);
+            const targetIndex = sortByRemainingTime(
+              filterWorryListViews(loadedViews, target.status),
+            ).findIndex((view) => view.worry.id === highlightId);
+            setVisibleCount(
+              targetIndex === -1
+                ? DEFAULT_VISIBLE_COUNT
+                : Math.max(DEFAULT_VISIBLE_COUNT, targetIndex + 1),
+            );
+            setHighlightedWorryId(highlightId);
+          }
+        }
       } catch (err) {
         if (cancelled) return;
         setError(
@@ -74,6 +132,8 @@ export function useWorriesListData() {
     return () => {
       cancelled = true;
     };
+    // 마운트 시 1회만 실행한다(searchParams/setSearchParams는 이 시점의 초기 URL만 참조하면 된다).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const views = useMemo(
@@ -121,6 +181,17 @@ export function useWorriesListData() {
   const setFilter = useCallback((nextFilter: WorryListFilter) => {
     setFilterState(nextFilter);
     setVisibleCount(DEFAULT_VISIBLE_COUNT);
+  }, []);
+
+  // 강조 표시는 잠깐만 유지한다(카드 스타일 참고).
+  useEffect(() => {
+    if (!highlightedWorryId) return;
+    const timer = setTimeout(() => setHighlightedWorryId(null), 2000);
+    return () => clearTimeout(timer);
+  }, [highlightedWorryId]);
+
+  const dismissHighlightError = useCallback(() => {
+    setHighlightError(null);
   }, []);
 
   const loadMore = useCallback(() => {
@@ -182,9 +253,18 @@ export function useWorriesListData() {
         [id]: { outcome, decidedAt: Date.now() },
       }));
       setDecisionSheetTarget(null);
+      setPurchaseConfirmTarget(null);
     },
     [],
   );
+
+  const openPurchaseConfirm = useCallback((id: string) => {
+    setPurchaseConfirmTarget(id);
+  }, []);
+
+  const closePurchaseConfirm = useCallback(() => {
+    setPurchaseConfirmTarget(null);
+  }, []);
 
   const openDeleteModal = useCallback((id: string) => {
     setDeleteModalTarget(id);
@@ -207,6 +287,8 @@ export function useWorriesListData() {
     worries.find((worry) => worry.id === decisionSheetTarget) ?? null;
   const deleteModalWorry =
     worries.find((worry) => worry.id === deleteModalTarget) ?? null;
+  const purchaseConfirmWorry =
+    worries.find((worry) => worry.id === purchaseConfirmTarget) ?? null;
 
   return {
     isLoading,
@@ -230,5 +312,11 @@ export function useWorriesListData() {
     closeDecisionSheet,
     decideOutcome,
     decisionSheetWorry,
+    openPurchaseConfirm,
+    closePurchaseConfirm,
+    purchaseConfirmWorry,
+    highlightedWorryId,
+    highlightError,
+    dismissHighlightError,
   };
 }

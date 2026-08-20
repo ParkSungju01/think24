@@ -2,7 +2,10 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ConfirmModal } from '../../components/ConfirmModal';
 import { NotificationEmptyState } from '../../components/NotificationBell/NotificationEmptyState';
+import { Toast } from '../../components/Toast';
 import { useNotifications } from '../../contexts/NotificationsContext';
+import { ROUTES } from '../../routes/paths';
+import type { NotificationItem } from '../../types/notifications';
 import { NotificationOverflowMenu } from './components/NotificationOverflowMenu';
 import { NotificationSwipeableListItem } from './components/NotificationSwipeableListItem';
 import { NotificationsHeader } from './components/NotificationsHeader';
@@ -34,6 +37,7 @@ export function NotificationsPage() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openItemId, setOpenItemId] = useState<string | null>(null);
   const [modal, setModal] = useState<ModalState>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   // 오버플로우 메뉴 바깥 클릭 시 닫힘 (NotificationBell의 outside-click 패턴 재사용)
@@ -55,6 +59,20 @@ export function NotificationsPage() {
     // 확인 완료: navigate(-1) 또는 홈 고정 중 자연스러운 쪽 — 벨을 통해서만 들어오는
     // 페이지라 히스토리가 항상 있으므로 navigate(-1)이 자연스럽다.
     navigate(-1);
+  };
+
+  // 알림 클릭 시 읽음 처리는 그대로 하되, worryId가 있으면 고민 목록에서 해당 고민으로
+  // 이동시킨다(필터 자동 전환 + 카드 강조는 WorriesPage/useWorriesListData가 처리). worryId가
+  // 없으면(이미 삭제/확정되어 더 이상 추적하지 않는 고민) 이동하지 않고 안내만 한다.
+  const handleNotificationClick = (notification: NotificationItem) => {
+    markAsRead(notification.id);
+
+    if (!notification.worryId) {
+      setToastMessage('이미 처리되었거나 삭제된 고민이에요.');
+      return;
+    }
+
+    navigate(`${ROUTES.worries}?highlight=${notification.worryId}`);
   };
 
   const handleMarkAllAsRead = () => {
@@ -122,7 +140,7 @@ export function NotificationsPage() {
                 onClose={() =>
                   setOpenItemId((prev) => (prev === notification.id ? null : prev))
                 }
-                onItemClick={() => markAsRead(notification.id)}
+                onItemClick={() => handleNotificationClick(notification)}
                 onRequestDelete={() =>
                   setModal({ type: 'deleteOne', id: notification.id })
                 }
@@ -141,6 +159,14 @@ export function NotificationsPage() {
           }
           onConfirm={handleConfirmModal}
           onCancel={handleCancelModal}
+        />
+      )}
+
+      {toastMessage && (
+        <Toast
+          message={toastMessage}
+          tone="error"
+          onDismiss={() => setToastMessage(null)}
         />
       )}
     </div>
