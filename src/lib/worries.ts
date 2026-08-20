@@ -46,7 +46,7 @@ const SEED_VERSION_KEY = 'meomchit:worries:seedVersion';
 // 덮어쓴다 — 배포 전 개발 단계에서 목데이터를 계속 조정해도 브라우저 localStorage를 수동으로
 // 지울 필요가 없게 하기 위함이다. 배포 후에는 이 상수를 더 이상 올리지 않으면 실사용자 데이터가
 // 보존된다(트레이드오프: 버전을 올리면 그 시점까지 쌓인 로컬 데이터는 전부 시드로 교체된다).
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 
 function readAll(): StoredWorryRow[] {
   try {
