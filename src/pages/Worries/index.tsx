@@ -4,7 +4,6 @@ import { WorrySummaryCard } from './components/WorrySummaryCard';
 import { WorryFilterChips } from './components/WorryFilterChips';
 import { WorryCard } from './components/WorryCard';
 import { LoadMoreButton } from './components/LoadMoreButton';
-import { PausedHintBanner } from './components/PausedHintBanner';
 import { WorryFilterEmptyNotice } from './components/WorryFilterEmptyNotice';
 import { WorryEmptyState } from './components/WorryEmptyState';
 import { DecisionSheet } from './components/DecisionSheet';
@@ -30,8 +29,6 @@ export function WorriesPage() {
     loadMore,
     mostUrgentView,
     totalPendingAmount,
-    pauseWorry,
-    resumeWorry,
     openDeleteModal,
     closeDeleteModal,
     confirmDelete,
@@ -43,6 +40,9 @@ export function WorriesPage() {
     openPurchaseConfirm,
     closePurchaseConfirm,
     purchaseConfirmWorry,
+    openEarlyDecision,
+    closeEarlyDecision,
+    earlyDecisionWorry,
     highlightedWorryId,
     highlightError,
     dismissHighlightError,
@@ -110,14 +110,12 @@ export function WorriesPage() {
                   <WorryCard
                     key={view.worry.id}
                     view={view}
-                    onPause={pauseWorry}
-                    onResume={resumeWorry}
                     onDelete={openDeleteModal}
                     onDecide={openDecisionSheet}
+                    onDecideNow={openEarlyDecision}
                     highlighted={view.worry.id === highlightedWorryId}
                   />
                 ))}
-                {filter === 'paused' && <PausedHintBanner />}
                 {hiddenCount > 0 && (
                   <LoadMoreButton hiddenCount={hiddenCount} onClick={loadMore} />
                 )}
@@ -143,9 +141,21 @@ export function WorriesPage() {
 
       {purchaseConfirmWorry && (
         <PurchaseConfirmModal
+          title="정말 구매하시겠습니까?"
           onCancel={closePurchaseConfirm}
           onConfirmPurchase={() =>
             decideOutcome(purchaseConfirmWorry.id, 'purchased')
+          }
+        />
+      )}
+
+      {earlyDecisionWorry && (
+        <PurchaseConfirmModal
+          title="지금 결정하시겠어요?"
+          subtitle="아직 24시간이 지나지 않았어요."
+          onCancel={closeEarlyDecision}
+          onConfirmPurchase={() =>
+            decideOutcome(earlyDecisionWorry.id, 'purchased')
           }
         />
       )}

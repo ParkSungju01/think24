@@ -9,33 +9,25 @@ import {
   sortByRemainingTime,
 } from '../../lib/worryListDerive';
 import { useNowTick } from '../../hooks/useNowTick';
-import type {
-  OutcomeOverlay,
-  PausedOverlay,
-  WorryListFilter,
-} from '../../types/worriesList';
+import type { OutcomeOverlay, WorryListFilter } from '../../types/worriesList';
 
 const DEFAULT_VISIBLE_COUNT = 2;
 
 /**
- * docs/plans/worries-list.md "화면 구성 > 화면 1" 상태/데이터 설계 그대로. 데이터 로드(로컬
- * localStorage 조회 1회) + 로컬 오버레이 3종(일시정지/재개 표시용 마감/확정) + 삭제 오버레이 +
- * 필터/더보기/모달 타깃 상태 + 파생값 계산까지 한 훅에 모아 WorriesPage를 얇게 유지한다.
+ * docs/plans/worries-list.md "화면 구성 > 화면 1" 상태/데이터 설계 기반. 데이터 로드(로컬
+ * localStorage 조회 1회) + 로컬 오버레이(확정/삭제) + 필터/더보기/모달 타깃 상태 + 파생값
+ * 계산까지 한 훅에 모아 WorriesPage를 얇게 유지한다.
  *
- * ADR-0004: 확정(구매/포기)·일시정지·삭제는 전부 이 훅의 로컬 useState로만 존재하고 실제 저장소에는
- * 쓰지 않는다 — 새로고침하면 초기화된다.
+ * ADR-0004: 확정(구매/포기)·삭제는 이 훅의 로컬 useState로만 존재하고 실제 저장소에는 쓰지
+ * 않는다 — 새로고침하면 초기화된다. 이슈 #51: 일시정지 기능은 완전히 제거했다(오버레이도
+ * 함께 삭제 — CONTEXT.md "일시정지" 용어도 삭제됨). 대신 진행 중인(ongoing) 고민을 마감 전에
+ * 조기 확정할 수 있는 "지금 결정하기" 재확인 모달을 추가했다.
  */
 export function useWorriesListData() {
   const [worries, setWorries] = useState<WorryRecord[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [pausedOverlays, setPausedOverlays] = useState<
-    Record<string, PausedOverlay>
-  >({});
-  const [resumedDisplayDeadlines, setResumedDisplayDeadlines] = useState<
-    Record<string, number>
-  >({});
   const [outcomeOverlays, setOutcomeOverlays] = useState<
     Record<string, OutcomeOverlay>
   >({});
@@ -53,6 +45,11 @@ export function useWorriesListData() {
   // 자체는 열어둔 채로 유지해, 재확인 모달에서 "조금 더 고민하기"를 누르면 결정 시트로
   // 돌아가 다시 포기/구매를 고를 수 있게 한다.
   const [purchaseConfirmTarget, setPurchaseConfirmTarget] = useState<
+    string | null
+  >(null);
+  // 마감 전(ongoing) 카드의 "지금 결정하기" → 아직 24시간이 지나지 않았음을 한 번 더 안내하는
+  // 재확인 모달. "조금 더 고민하기"를 누르면 이 모달만 닫힌다(카드는 그대로 ongoing 유지).
+  const [earlyDecisionTarget, setEarlyDecisionTarget] = useState<
     string | null
   >(null);
 
@@ -97,8 +94,6 @@ export function useWorriesListData() {
             result,
             new Date(),
             {},
-            {},
-            {},
             new Set(),
           );
           const target = loadedViews.find(
@@ -137,16 +132,8 @@ export function useWorriesListData() {
   }, []);
 
   const views = useMemo(
-    () =>
-      deriveWorryListViews(
-        worries,
-        now,
-        pausedOverlays,
-        resumedDisplayDeadlines,
-        outcomeOverlays,
-        deletedIds,
-      ),
-    [worries, now, pausedOverlays, resumedDisplayDeadlines, outcomeOverlays, deletedIds],
+    () => deriveWorryListViews(worries, now, outcomeOverlays, deletedIds),
+    [worries, now, outcomeOverlays, deletedIds],
   );
 
   const counts = useMemo(() => countWorryListViews(views), [views]);
@@ -198,45 +185,13 @@ export function useWorriesListData() {
     setVisibleCount(filteredViews.length);
   }, [filteredViews.length]);
 
-  const pauseWorry = useCallback(
-    (id: string) => {
-      const target = views.find((view) => view.worry.id === id);
-      if (!target || target.status !== 'ongoing') return;
+  const openEarlyDecision = useCallback((id: string) => {
+    setEarlyDecisionTarget(id);
+  }, []);
 
-      setPausedOverlays((prev) => ({
-        ...prev,
-        [id]: {
-          pausedAt: Date.now(),
-          remainingSecondsSnapshot: target.displayRemainingSeconds,
-        },
-      }));
-      setResumedDisplayDeadlines((prev) => {
-        if (!(id in prev)) return prev;
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      });
-    },
-    [views],
-  );
-
-  const resumeWorry = useCallback(
-    (id: string) => {
-      const overlay = pausedOverlays[id];
-      if (!overlay) return;
-
-      setResumedDisplayDeadlines((prev) => ({
-        ...prev,
-        [id]: Date.now() + overlay.remainingSecondsSnapshot * 1000,
-      }));
-      setPausedOverlays((prev) => {
-        const next = { ...prev };
-        delete next[id];
-        return next;
-      });
-    },
-    [pausedOverlays],
-  );
+  const closeEarlyDecision = useCallback(() => {
+    setEarlyDecisionTarget(null);
+  }, []);
 
   const openDecisionSheet = useCallback((id: string) => {
     setDecisionSheetTarget(id);
@@ -254,6 +209,7 @@ export function useWorriesListData() {
       }));
       setDecisionSheetTarget(null);
       setPurchaseConfirmTarget(null);
+      setEarlyDecisionTarget(null);
     },
     [],
   );
@@ -289,6 +245,8 @@ export function useWorriesListData() {
     worries.find((worry) => worry.id === deleteModalTarget) ?? null;
   const purchaseConfirmWorry =
     worries.find((worry) => worry.id === purchaseConfirmTarget) ?? null;
+  const earlyDecisionWorry =
+    worries.find((worry) => worry.id === earlyDecisionTarget) ?? null;
 
   return {
     isLoading,
@@ -302,8 +260,6 @@ export function useWorriesListData() {
     loadMore,
     mostUrgentView,
     totalPendingAmount,
-    pauseWorry,
-    resumeWorry,
     openDeleteModal,
     closeDeleteModal,
     confirmDelete,
@@ -315,6 +271,9 @@ export function useWorriesListData() {
     openPurchaseConfirm,
     closePurchaseConfirm,
     purchaseConfirmWorry,
+    openEarlyDecision,
+    closeEarlyDecision,
+    earlyDecisionWorry,
     highlightedWorryId,
     highlightError,
     dismissHighlightError,

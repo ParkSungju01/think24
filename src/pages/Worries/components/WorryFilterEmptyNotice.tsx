@@ -2,7 +2,6 @@ import type { WorryListFilter } from '../../../types/worriesList';
 
 const FILTER_EMPTY_MESSAGE: Record<Exclude<WorryListFilter, 'all'>, string> = {
   ongoing: '진행 중인 고민이 없어요',
-  paused: '일시정지된 고민이 없어요',
   pending: '결정 대기 중인 고민이 없어요',
 };
 

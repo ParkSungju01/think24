@@ -44,9 +44,7 @@ export function WorrySummaryCard({
       </p>
 
       {isEmpty ? (
-        <p className="mt-4 text-[12px] text-[#999]">
-          진행 0 · 정지 0 · 대기 0
-        </p>
+        <p className="mt-4 text-[12px] text-[#999]">진행 0 · 대기 0</p>
       ) : (
         <div className="mt-4 flex items-center justify-between border-t border-[#eee] pt-3 text-[12px]">
           {filter === 'pending' ? (
@@ -55,11 +53,6 @@ export function WorrySummaryCard({
               <span className="font-bold text-[#e05b4e]">
                 {counts.pending}건
               </span>
-            </>
-          ) : filter === 'paused' ? (
-            <>
-              <span className="text-[#666]">⏸ 멈춰둔 고민</span>
-              <span className="text-black">{counts.paused}건</span>
             </>
           ) : mostUrgentView ? (
             <>

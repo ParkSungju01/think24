@@ -198,7 +198,7 @@ export async function fetchRecentWorries(
 
 /**
  * "진행 중"(status === 'ongoing') worry를 기간 제한 없이 전부 조회한다. 고민 목록 화면은
- * 결정 대기/일시정지까지 파생 상태로 다시 나누므로 status 필터만 걸고, deadline_at 오름차순으로
+ * 결정 대기까지 파생 상태로 다시 나누므로 status 필터만 걸고, deadline_at 오름차순으로
  * 정렬해둔다(화면에서는 어차피 "남은 시간순"으로 다시 정렬한다).
  */
 export async function fetchOngoingWorries(): Promise<WorryRecord[]> {
